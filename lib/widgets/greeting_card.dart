@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/constants.dart';
+import '../utils/constants/constants.dart';
 
 class GreetingCard extends StatelessWidget {
   final String userName;

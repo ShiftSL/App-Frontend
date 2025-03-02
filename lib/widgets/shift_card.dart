@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/constants.dart';
+import '../utils/constants/constants.dart';
 
 class ShiftCard extends StatelessWidget {
   final String timeRange;
@@ -34,7 +34,8 @@ class ShiftCard extends StatelessWidget {
       onTap: onTap,
       child: Card(
         elevation: 2.0,
-        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: kDefaultPadding),
+        margin: const EdgeInsets.symmetric(
+            vertical: 8, horizontal: kDefaultPadding),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -57,7 +58,8 @@ class ShiftCard extends StatelessWidget {
                   color: statusColor(status),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(status, style: const TextStyle(color: Colors.white)),
+                child:
+                    Text(status, style: const TextStyle(color: Colors.white)),
               ),
             ],
           ),

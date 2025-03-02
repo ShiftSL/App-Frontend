@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/constants.dart';
+import '../utils/constants/constants.dart';
 
 class SwapCard extends StatelessWidget {
   final String name;
@@ -32,7 +32,8 @@ class SwapCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('$name - $role', style: Theme.of(context).textTheme.titleMedium),
+            Text('$name - $role',
+                style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
             Text(date, style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 4),
