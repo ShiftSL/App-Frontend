@@ -3,11 +3,11 @@ import '../../constants/colors.dart';
 import '../../constants/sizes.dart';
 
 /* -- Light & Dark Elevated Button Themes -- */
-class TElevatedButtonTheme {
-  TElevatedButtonTheme._(); //To avoid creating instances
+class ShiftslElevatedButtonTheme {
+  ShiftslElevatedButtonTheme._(); //To avoid creating instances
 
   /* -- Light Theme -- */
-  static final lightElevatedButtonTheme = ElevatedButtonThemeData(
+  static final elevatedButtonTheme = ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       elevation: 0,
       foregroundColor: ShiftslColors.primaryColor,
@@ -18,8 +18,8 @@ class TElevatedButtonTheme {
       padding: const EdgeInsets.symmetric(vertical: ShiftslSizes.buttonHeight),
       textStyle: const TextStyle(
           fontSize: 16,
-          color: ShiftslColors.textWhite,
-          fontWeight: FontWeight.w600),
+          color: Color.fromARGB(255, 255, 255, 255),
+          fontWeight: FontWeight.bold),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(ShiftslSizes.buttonRadius)),
     ),
