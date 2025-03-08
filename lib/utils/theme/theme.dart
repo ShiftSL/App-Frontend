@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shift_sl/utils/theme/widget_theme/elevated_button_theme.dart';
+import 'package:shift_sl/utils/theme/widget_theme/text_field_theme.dart';
 
 /// SHIFT SL brand colors
 const Color kPrimaryColor = Color(0xFF131313); // #2B3C56
@@ -9,7 +11,7 @@ const Color kLightColor = Color(0xFFF7F7F7); // #F7F7F7
 final ThemeData shiftSlTheme = ThemeData(
   primaryColor: kPrimaryColor,
 
-  scaffoldBackgroundColor: kLightColor,
+  scaffoldBackgroundColor: const Color(0xFFF7F7F7),
 
   fontFamily: 'Inter',
 
@@ -27,16 +29,19 @@ final ThemeData shiftSlTheme = ThemeData(
     onSurface: kDarkColor,
   ),
 
+  elevatedButtonTheme: ShiftslElevatedButtonTheme.elevatedButtonTheme,
+  inputDecorationTheme: ShiftslTextFieldTheme.lnputDecorationTheme,
+
   // Style for ElevatedButtons
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      backgroundColor: kSecondaryColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      textStyle: const TextStyle(fontWeight: FontWeight.bold),
-    ),
-  ),
+  // elevatedButtonTheme: ElevatedButtonThemeData(
+  //   style: ElevatedButton.styleFrom(
+  //     backgroundColor: kSecondaryColor,
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.circular(12),
+  //     ),
+  //     textStyle: const TextStyle(fontWeight: FontWeight.bold),
+  //   ),
+  // ),
 
   // Define text styles. Adjust sizes and weights as needed.
   textTheme: const TextTheme(

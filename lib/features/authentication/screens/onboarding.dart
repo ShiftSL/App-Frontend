@@ -28,16 +28,19 @@ class OnboardingScreen extends StatelessWidget {
             children: const [
               OnBoardingPage(
                   image: ShiftslImages.onboarding1,
-                  title: "welcome to shiftsl",
-                  subtile: "balh balah balah"),
+                  title: "Collaborate Seamlessly",
+                  subtile:
+                      "Empower your team with transparent and flexible scheduling tools."),
               OnBoardingPage(
                   image: ShiftslImages.onboarding2,
-                  title: "welcome to shiftsl",
-                  subtile: "balh balah balah"),
+                  title: "Stay Organized, Always",
+                  subtile:
+                      "Keep track of shifts, swaps, and updates in real-time."),
               OnBoardingPage(
                   image: ShiftslImages.onboarding3,
-                  title: "welcome to shiftsl",
-                  subtile: "balh balah balah"),
+                  title: "Easy Shift Swapping",
+                  subtile:
+                      "Streamline shift trades with instant approvals and team collaboration."),
             ],
           ),
           //skip button
