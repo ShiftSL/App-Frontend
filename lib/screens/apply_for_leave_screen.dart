@@ -17,13 +17,12 @@ class ApplyForLeaveSheet extends StatefulWidget {
 class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
   String _selectedType = 'Casual';
   String? _selectedShift;
-
   final TextEditingController _causeController = TextEditingController();
 
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
 
-  bool get isSingleDayLeave => _startDate == _endDate;
+  bool _isSingleDayLeave = true; // Default mode: One Day Leave
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -37,8 +36,8 @@ class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
       setState(() {
         if (isStartDate) {
           _startDate = pickedDate;
-          if (_endDate.isBefore(_startDate)) {
-            _endDate = _startDate;
+          if (!_isSingleDayLeave && _endDate.isBefore(_startDate)) {
+            _endDate = _startDate; // Ensure correct order
           }
         } else {
           _endDate = pickedDate;
@@ -51,10 +50,7 @@ class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          "Leave request submitted!",
-          style: TextStyle(color: Colors.white),
-        ),
+        content: Text("Leave request submitted!", style: TextStyle(color: Colors.white)),
         backgroundColor: kPrimaryColor,
       ),
     );
@@ -63,8 +59,8 @@ class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.8,
-      minChildSize: 0.7,
+      initialChildSize: 0.85,
+      minChildSize: 0.75,
       maxChildSize: 0.9,
       builder: (context, scrollController) {
         return Container(
@@ -96,29 +92,33 @@ class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
               ),
               const SizedBox(height: 20),
 
-              // Dropdown: Type
+              // Toggle Button: One Day / Few Days
+              _buildToggleButtons(),
+
+              // Leave Type Dropdown
               _buildDropdown("Type", _selectedType, ["Casual", "Sick", "Special"], (value) {
                 setState(() => _selectedType = value!);
               }),
 
-              // Text Field: Cause
+              // Cause Text Field
               _buildTextField("Cause", "Enter reason", _causeController),
 
               // Date Picker: Start Date
               _buildDatePicker("From", _startDate, () => _selectDate(context, true)),
 
-              // Date Picker: End Date
-              _buildDatePicker("To", _endDate, () => _selectDate(context, false)),
+              // Date Picker: End Date (Only if in "Few Days" mode)
+              if (!_isSingleDayLeave)
+                _buildDatePicker("To", _endDate, () => _selectDate(context, false)),
 
-              // Shift selection appears only for single-day leave
-              if (isSingleDayLeave)
+              // Shift selection (Only if "One Day" mode)
+              if (_isSingleDayLeave)
                 _buildDropdown("Shift", _selectedShift, ["Morning", "Day", "Night"], (value) {
                   setState(() => _selectedShift = value!);
                 }),
 
               const Spacer(),
 
-              // Buttons
+              // Buttons: Cancel & Apply
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -133,7 +133,48 @@ class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
     );
   }
 
-  // Widget for Dropdown
+  // Toggle Button UI
+  Widget _buildToggleButtons() {
+    return Center(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _toggleButton("One Day", _isSingleDayLeave),
+            _toggleButton("Few Days", !_isSingleDayLeave),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Toggle Button Item
+  Widget _toggleButton(String label, bool isActive) {
+    return GestureDetector(
+      onTap: () => setState(() => _isSingleDayLeave = label == "One Day"),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        decoration: BoxDecoration(
+          color: isActive ? kSecondaryColor : Colors.white,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isActive ? kPrimaryColor : kDarkColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Dropdown UI
   Widget _buildDropdown(String label, String? selectedValue, List<String> items, ValueChanged<String?> onChanged) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -167,7 +208,7 @@ class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
     );
   }
 
-  // Widget for Text Field
+  // Text Field UI
   Widget _buildTextField(String label, String hint, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -194,8 +235,20 @@ class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
       ),
     );
   }
+  Widget _buildButton(String text, Color bgColor, Color textColor, VoidCallback onPressed) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: bgColor,
+        foregroundColor: textColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+      ),
+      child: Text(text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+    );
+  }
 
-  // Widget for Date Picker
+  // Date Picker UI
   Widget _buildDatePicker(String label, DateTime date, VoidCallback onTap) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -223,19 +276,6 @@ class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildButton(String text, Color bgColor, Color textColor, VoidCallback onPressed) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: bgColor,
-        foregroundColor: textColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-      ),
-      child: Text(text, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
     );
   }
 }
