@@ -17,12 +17,17 @@ dependencies:
   provider: ^6.1.2
   intl: ^0.20.2
   logger: ^2.5.0
-  flutter_native_splash: ^2.4.4
-  smooth_page_indicator: ^1.2.0+3
-  flutter_svg: ^2.0.17
+  flutter_native_splash: 2.4.4
+  smooth_page_indicator: ^1.2.1
 
   get: ^4.7.2
   get_storage: ^2.1.1
+
+  #firebase
+  firebase_auth: ^4.8.2
+  firebase_core: ^2.15.1
+  firebase_messaging: ^14.7.0
+  shared_preferences: ^2.1.1
 
   #icons
   cupertino_icons: ^1.0.8
@@ -38,15 +43,24 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
+  image_path: "assets/icons/my_app_icon.png"
+  adaptive_icon_background: "assets/icons/adaptive_bg.png"
+
+flutter_icons:
   image_path: "assets/logos/icon.png"
-  adaptive_icon_background: "#2B3C56"
-  adaptive_icon_foreground: "assets/logos/iconV2.png"
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/icons/
-    - assets/images/on_boarding/
     - assets/images/
+    - assets/images/on_boarding/
+    - assets/images/on_boarding/Group.svg
+    - assets/images/on_boarding/employee-works-on-deadlines.svg
+    - assets/images/on_boarding/onboarding1.png
+    - assets/images/on_boarding/onboarding2.png
+    - assets/images/on_boarding/onboarding3.png
     - assets/logos/
+    - assets/logos/adaptive_icon.png
+    - assets/logos/iconV2.png
