@@ -38,7 +38,7 @@ class ShiftSlApp extends StatelessWidget {
         GetPage(name: '/notifications', page: () => const NotificationScreen()),
         GetPage(name: '/schedule', page: () => const ScheduleScreen()),
         GetPage(name: '/swaps', page: () => const SwapsScreen()),
-        GetPage(name: '/applyForLeave', page: () => const ApplyForLeaveScreen()),
+        GetPage(name: '/applyForLeave', page: () => const ApplyForLeaveSheet()),
         GetPage(name: '/editProfile', page: () => const EditProfileScreen()),
         GetPage(name: '/profile', page: () => const ProfileScreen()),
       ],
