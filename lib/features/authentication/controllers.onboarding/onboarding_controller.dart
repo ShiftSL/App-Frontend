@@ -5,10 +5,11 @@ import 'package:shift_sl/screens/sign_in_screen.dart';
 class OnboardingController extends GetxController {
   static OnboardingController get instance => Get.find();
 
-
+  //Variables
   final pageController = PageController();
   Rx<int> currentPageIndex = 0.obs;
 
+  //update curent page index when page scrolled
   void updatePageIndicator(index) => currentPageIndex.value = index;
 
   ///update current page index when dot navigation clicked
@@ -30,6 +31,6 @@ class OnboardingController extends GetxController {
   ///update current page index when skip button clicked
   void skipPage() {
     currentPageIndex.value = 2;
-    pageController.jumpTo(4);
+    pageController.jumpTo(2);
   }
 }
