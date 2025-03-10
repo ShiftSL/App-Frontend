@@ -11,19 +11,28 @@ dependencies:
   flutter:
     sdk: flutter
 
-  #utility
+  # Utility
   table_calendar: ^3.2.0
   http: ^1.3.0
   provider: ^6.1.2
   intl: ^0.20.2
   logger: ^2.5.0
-  flutter_native_splash: ^2.4.4
-  smooth_page_indicator: ^1.2.0+3
+  flutter_native_splash: 2.4.4
+  smooth_page_indicator: ^1.2.1
 
   get: ^4.7.2
   get_storage: ^2.1.1
 
-  #icons
+  # Firebase Dependencies
+  firebase_core: ^2.15.1
+  firebase_auth: ^4.8.2
+  cloud_firestore: ^4.9.2
+  firebase_messaging: ^14.7.2
+  firebase_storage: ^11.5.2
+  shared_preferences: ^2.2.2  # Latest stable version
+
+
+  # Icons
   cupertino_icons: ^1.0.8
   iconsax: ^0.0.8
   google_fonts: ^6.2.1
@@ -47,7 +56,14 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/
     - assets/icons/
+    - assets/images/
     - assets/images/on_boarding/
+    - assets/images/on_boarding/Group.svg
+    - assets/images/on_boarding/employee-works-on-deadlines.svg
+    - assets/images/on_boarding/onboarding1.png
+    - assets/images/on_boarding/onboarding2.png
+    - assets/images/on_boarding/onboarding3.png
     - assets/logos/
+    - assets/logos/adaptive_icon.png
+    - assets/logos/iconV2.png
