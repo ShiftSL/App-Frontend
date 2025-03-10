@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:shift_sl/features/core/schedule/schedule_screen_v2.dart';
+import 'package:shift_sl/screens/schedule_screen.dart';
+import 'package:shift_sl/utils/constants/colors.dart';
+import 'package:shift_sl/utils/constants/sizes.dart';
+import 'package:shift_sl/widgets/shift_card_v2.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -41,68 +47,133 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        toolbarHeight: 120,
+        toolbarHeight: 80,
         title: Image.asset(
           'assets/images/shift_sl_logo.png',
-          height: 180,
+          height: 100,
+          width: 120,
         ),
         centerTitle: true,
-
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             // Greeting Card
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              padding: const EdgeInsets.only(left: 16, top: 25, right: 16, bottom: 25),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+                color: ShiftslColors.primaryColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 children: [
                   const CircleAvatar(
                     radius: 50,
-                    backgroundImage: AssetImage('assets/images/doctor_avatar.png'),
+                    backgroundImage:
+                        AssetImage('assets/images/doctor_avatar.png'),
                   ),
                   const SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
-                      Text('Hello!', style: TextStyle(color: Colors.green)),
+                      Text('Hello!',
+                          style: TextStyle(
+                            color: ShiftslColors.white,
+                            fontSize: ShiftslSizes.fontSizeMd,
+                            fontWeight: FontWeight.w400,
+                          )),
                       SizedBox(height: 4),
                       Text(
                         'Dr. Adam Levine',
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          fontSize: ShiftslSizes.fontSizeLg,
+                          color: ShiftslColors.white,
                         ),
                       ),
-                      Text('King’s Hospital', style: TextStyle(color: Colors.grey)),
+                      Text('King’s Hospital',
+                          style: TextStyle(
+                              color: ShiftslColors.secondaryColor,
+                              fontSize: ShiftslSizes.fontSizeMd,
+                              fontWeight: FontWeight.w400)),
                     ],
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: ShiftslSizes.defaultSpace),
+
+            // schdule published card
+            Container(
+              width: double.infinity,
+              height: 80,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: ShiftslColors.primaryColor,
+                boxShadow: const [
+                  BoxShadow(color: Colors.black12, blurRadius: 4)
+                ],
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    'New Schedule Published!',
+                    style: TextStyle(
+                      color: ShiftslColors.white,
+                      fontSize: ShiftslSizes.fontSizeMd,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const Spacer(),
+                  SizedBox(
+                    width: 130,
+                    height: 50,
+                    child: FilledButton(
+                      onPressed: () => Get.to(() => const ScheduleScreen()),
+                      style: FilledButton.styleFrom(
+                        padding: EdgeInsets.all(10),
+                        backgroundColor: ShiftslColors.secondaryColor,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                        ),
+                        side: BorderSide.none,
+                      ),
+                      child: const Text(
+                        'View Schedule',
+                        style: TextStyle(
+                            color: ShiftslColors.primaryColor,
+                            fontWeight: FontWeight.w500,
+                            fontSize: ShiftslSizes.fontSizeMd),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: ShiftslSizes.defaultSpace),
+
             // "Today's Schedule"
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Today’s Schedule",
-                style: Theme.of(context).textTheme.titleMedium,
+                "Your Next Shift",
+                style: TextStyle(
+                  color: ShiftslColors.primaryColor,
+                  fontSize: ShiftslSizes.fontSizeLg,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            const SizedBox(height: 8),
+            // const SizedBox(height: 8),
             // Build "today" shift card
-            _buildShiftCard(todaysShift),
-
-            const SizedBox(height: 24),
+            // _buildShiftCard(todaysShift),
+            ShiftCardV2(),
+            // const SizedBox(height: 24),
             // "Upcoming Shifts"
             Align(
               alignment: Alignment.centerLeft,
@@ -114,7 +185,9 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 8),
             // Build upcoming shift cards
             Column(
-              children: upcomingShifts.map((shift) => _buildShiftCard(shift)).toList(),
+              children: upcomingShifts
+                  .map((shift) => _buildShiftCard(shift))
+                  .toList(),
             ),
             const SizedBox(height: 20),
           ],
@@ -182,7 +255,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(timeLabel, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(timeLabel,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text(
                     '$ward\n$date\n$time',
                     style: const TextStyle(color: Colors.grey, height: 1.3),
@@ -200,7 +274,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: Text(
                 status,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w600),
               ),
             ),
           ],

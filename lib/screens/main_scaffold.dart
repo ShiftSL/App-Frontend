@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shift_sl/features/core/schedule/schedule_screen_v2.dart';
 import 'package:shift_sl/utils/constants/colors.dart';
 import 'home_screen.dart';
 import 'schedule_screen.dart';
@@ -19,7 +20,7 @@ class _MainScaffoldState extends State<MainScaffold> {
   // List of screens for each tab.
   final List<Widget> _screens = [
     HomeScreen(), // Your home screen widget.
-    const ScheduleScreen(), // Your schedule screen widget.
+    ScheduleScreen(), // Your schedule screen widget.
     const NotificationScreen(), // Your notification screen widget.
     const ProfileScreen(), // Your profile screen widget.
   ];

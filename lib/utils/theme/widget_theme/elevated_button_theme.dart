@@ -17,9 +17,7 @@ class ShiftslElevatedButtonTheme {
       side: const BorderSide(color: ShiftslColors.primaryColor),
       padding: const EdgeInsets.symmetric(vertical: ShiftslSizes.buttonHeight),
       textStyle: const TextStyle(
-          fontSize: 16,
-          color: Color.fromARGB(255, 255, 255, 255),
-          fontWeight: FontWeight.bold),
+          fontSize: 16, color: Color(0xFFFFFFFF), fontWeight: FontWeight.bold),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(ShiftslSizes.buttonRadius)),
     ),
