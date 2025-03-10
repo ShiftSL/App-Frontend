@@ -19,6 +19,7 @@ dependencies:
   logger: ^2.5.0
   flutter_native_splash: ^2.4.4
   smooth_page_indicator: ^1.2.0+3
+  flutter_svg: ^2.0.17
 
   get: ^4.7.2
   get_storage: ^2.1.1
@@ -39,7 +40,7 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/logos/icon.png"
   adaptive_icon_background: "#2B3C56"
-  adaptive_icon_foreground: "assets/logos/adaptive_icon.png"
+  adaptive_icon_foreground: "assets/logos/iconV2.png"
 
 flutter:
   uses-material-design: true

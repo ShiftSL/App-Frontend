@@ -147,10 +147,11 @@ class EditProfileScreen extends StatelessWidget {
                 const SizedBox(height: ShiftslSizes.defaultSpace),
                 SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 60,
                   child: ElevatedButton(
                     onPressed: () => Get.to(() => const EditProfileScreen()),
                     style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.all(10),
                       backgroundColor: ShiftslColors.primaryColor,
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(15)),

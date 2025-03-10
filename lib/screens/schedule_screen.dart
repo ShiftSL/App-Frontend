@@ -31,7 +31,7 @@ final Map<String, List<Map<String, String>>> mockShifts = {
       'status': 'Leave',
     },
   ],
-  '2025-02-25': [
+  '2025-03-10': [
     {
       'timeLabel': 'Morning',
       'timeRange': '6:00 AM - 12:00 Noon',
@@ -77,8 +77,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     final dateKey = DateFormat('yyyy-MM-dd').format(date);
     setState(() {
       // Convert the mockShifts maps to dynamic so we can update the status later.
-      _shiftsForSelectedDay = List<Map<String, dynamic>>.from(
-          mockShifts[dateKey] ?? []);
+      _shiftsForSelectedDay =
+          List<Map<String, dynamic>>.from(mockShifts[dateKey] ?? []);
     });
   }
 
@@ -90,7 +90,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   void _handleShiftTap(Map<String, dynamic> shiftData) {
     final now = DateTime.now();
     final todayOnly = DateTime(now.year, now.month, now.day);
-    final selectedOnly = DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day);
+    final selectedOnly =
+        DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day);
 
     if (selectedOnly.isBefore(todayOnly)) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -223,21 +224,21 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   ),
                   _shiftsForSelectedDay.isEmpty
                       ? const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text('No shifts for this date'),
-                  )
+                          padding: EdgeInsets.all(16),
+                          child: Text('No shifts for this date'),
+                        )
                       : ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _shiftsForSelectedDay.length,
-                    itemBuilder: (context, index) {
-                      final shift = _shiftsForSelectedDay[index];
-                      return GestureDetector(
-                        onTap: () => _handleShiftTap(shift),
-                        child: _buildShiftCard(shift),
-                      );
-                    },
-                  ),
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _shiftsForSelectedDay.length,
+                          itemBuilder: (context, index) {
+                            final shift = _shiftsForSelectedDay[index];
+                            return GestureDetector(
+                              onTap: () => _handleShiftTap(shift),
+                              child: _buildShiftCard(shift),
+                            );
+                          },
+                        ),
                   const SizedBox(height: 16),
                 ],
               ),
@@ -258,7 +259,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () => Navigator.pushNamed(context, '/applyForLeave'),
+                  onPressed: () =>
+                      Navigator.pushNamed(context, '/applyForLeave'),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
@@ -304,9 +306,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
     // Determine the status color.
     Color statusColor;
-    if (status.toLowerCase() == 'attended' || status.toLowerCase() == 'attending') {
+    if (status.toLowerCase() == 'attended' ||
+        status.toLowerCase() == 'attending') {
       statusColor = Colors.green;
-    } else if (status.toLowerCase() == 'leave' || status.toLowerCase() == 'not attending') {
+    } else if (status.toLowerCase() == 'leave' ||
+        status.toLowerCase() == 'not attending') {
       statusColor = Colors.red;
     } else {
       statusColor = Colors.blueGrey;
@@ -369,7 +373,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             ),
             child: Text(
               status,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.w600),
             ),
           ),
         ],

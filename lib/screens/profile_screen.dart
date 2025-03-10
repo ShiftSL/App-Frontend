@@ -58,7 +58,7 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: ShiftslSizes.defaultSpace),
                 SizedBox(
                   width: 200,
-                  height: 50,
+                  height: 60,
                   child: ElevatedButton(
                     onPressed: () => Get.to(() => const EditProfileScreen()),
                     style: ElevatedButton.styleFrom(
@@ -70,9 +70,10 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     child: const Text('Edit Profile',
                         style: TextStyle(
-                            color: ShiftslColors.secondaryColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: ShiftslSizes.fontSizeMd)),
+                          color: ShiftslColors.secondaryColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: ShiftslSizes.fontSizeMd,
+                        )),
                   ),
                 ),
                 const SizedBox(height: ShiftslSizes.defaultSpace),
