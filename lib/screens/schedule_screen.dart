@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import 'apply_for_leave_screen.dart';
+
 /// Mock JSON data for shifts.
 /// Keys are dates in yyyy-MM-dd format.
 /// Note: We no longer include "startHour" in the JSON.
@@ -251,25 +253,36 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // "Apply for Leave" button.
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2AED8D),
-                    fixedSize: const Size(100, 100),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () =>
-                      Navigator.pushNamed(context, '/applyForLeave'),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.post_add),
-                      SizedBox(height: 4),
-                      Text('Leave'),
-                    ],
-                  ),
-                ),
+    ElevatedButton(
+    style: ElevatedButton.styleFrom(
+    backgroundColor: const Color(0xFF2AED8D),
+    minimumSize: const Size(100, 100), // Allows better responsiveness
+    shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(16), // More refined rounded corners
+    ),
+    elevation: 4, // Adds slight elevation for a modern look
+    ),
+    onPressed: () {
+    showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent, // Blends well with UI
+    builder: (context) => const ApplyForLeaveSheet(), // Opens modal
+    );
+    },
+    child: Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: const [
+    Icon(Icons.post_add, size: 28, color: Colors.white), // Ensures visibility
+    SizedBox(height: 6), // Increased spacing
+    Text(
+    'Leave',
+    style: TextStyle(fontSize: 14, color: Colors.white), // Text Styling
+    ),
+    ],
+    ),
+    ),
+
                 const SizedBox(width: 24),
                 // "Swap Shifts" button.
                 ElevatedButton(
