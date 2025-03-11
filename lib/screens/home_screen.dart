@@ -4,7 +4,7 @@ import 'package:shift_sl/features/core/schedule/schedule_screen_v2.dart';
 import 'package:shift_sl/screens/schedule_screen.dart';
 import 'package:shift_sl/utils/constants/colors.dart';
 import 'package:shift_sl/utils/constants/sizes.dart';
-import 'package:shift_sl/widgets/shift_card_v2.dart';
+import 'package:shift_sl/widgets/leave_shift_card_v2.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);

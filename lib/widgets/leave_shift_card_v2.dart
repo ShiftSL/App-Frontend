@@ -6,7 +6,18 @@ import 'package:shift_sl/utils/constants/colors.dart';
 import 'package:shift_sl/utils/constants/sizes.dart';
 
 class ShiftCardV2 extends StatelessWidget {
-  const ShiftCardV2({super.key});
+  // final String name;
+  // final String time;
+  // final String date;
+  // final String shiftType;
+
+  const ShiftCardV2({
+    super.key,
+    // required this.name,
+    // required this.time,
+    // required this.date,
+    // required this.shiftType,
+  });
 
   @override
   Widget build(BuildContext context) {
