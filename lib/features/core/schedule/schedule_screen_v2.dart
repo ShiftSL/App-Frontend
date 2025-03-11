@@ -7,7 +7,7 @@ import 'package:shift_sl/screens/edit_profile_screen.dart';
 import 'package:shift_sl/utils/constants/colors.dart';
 import 'package:shift_sl/utils/constants/sizes.dart';
 import 'package:shift_sl/widgets/shift_card.dart';
-import 'package:shift_sl/widgets/shift_card_v2.dart';
+import 'package:shift_sl/widgets/leave_shift_card_v2.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class ShiftManagementScreen extends StatefulWidget {
@@ -30,13 +30,14 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: DropdownButton<String>(
-          value: 'Ward 01',
-          items: ['Ward 01', 'Ward 02', 'Ward 03']
-              .map((ward) => DropdownMenuItem(value: ward, child: Text(ward)))
-              .toList(),
-          onChanged: (value) {},
+        title: const Text(
+          'Schedule',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
         ),
+        centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
           tabs: [

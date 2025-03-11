@@ -4,84 +4,25 @@ import 'package:iconsax/iconsax.dart';
 import 'package:shift_sl/screens/edit_profile_screen.dart';
 import 'package:shift_sl/utils/constants/colors.dart';
 import 'package:shift_sl/utils/constants/sizes.dart';
-import 'package:table_calendar/table_calendar.dart';
 
-class ShiftManagementScreen extends StatefulWidget {
-  ShiftManagementScreen({Key? key}) : super(key: key);
-  @override
-  _ShiftManagementScreenState createState() => _ShiftManagementScreenState();
-}
+class ShiftCardV2 extends StatelessWidget {
+  // final String name;
+  // final String time;
+  // final String date;
+  // final String shiftType;
 
-class _ShiftManagementScreenState extends State<ShiftManagementScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  const ShiftCardV2({
+    super.key,
+    // required this.name,
+    // required this.time,
+    // required this.date,
+    // required this.shiftType,
+  });
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: DropdownButton<String>(
-          value: 'Ward 01',
-          items: ['Ward 01', 'Ward 02', 'Ward 03']
-              .map((ward) => DropdownMenuItem(value: ward, child: Text(ward)))
-              .toList(),
-          onChanged: (value) {},
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(text: 'My Shifts'),
-            Tab(text: 'Schedule'),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildMyShiftsTab(),
-          Center(child: Text('Schedule View Placeholder')),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMyShiftsTab() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          TableCalendar(
-            focusedDay: DateTime.now(),
-            firstDay: DateTime(2020),
-            lastDay: DateTime(2030),
-            calendarStyle: CalendarStyle(
-              // holidayDecoration:
-              //     BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-              // selectedDecoration:
-              //     BoxDecoration(color: Colors.grey, shape: BoxShape.circle),
-              todayDecoration:
-                  BoxDecoration(color: Colors.green, shape: BoxShape.circle),
-            ),
-            holidayPredicate: (day) => day.weekday == DateTime.sunday,
-          ),
-          const SizedBox(height: 16),
-          ShiftCard(),
-        ],
-      ),
-    );
-  }
-}
-
-class ShiftCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(ShiftslSizes.defaultSpace),
+      padding: const EdgeInsets.all(0),
       child: Card(
         color: ShiftslColors.primaryColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -120,7 +61,7 @@ class ShiftCard extends StatelessWidget {
                         side: BorderSide.none,
                       ),
                       child: const Icon(
-                        Iconsax.calendar_add,
+                        Iconsax.arrow_swap_horizontal,
                         size: 24,
                         color: ShiftslColors.primaryColor,
                       ),
@@ -133,7 +74,7 @@ class ShiftCard extends StatelessWidget {
                 height: 20,
                 width: double.infinity,
                 child: Text(
-                  'Apply for Leave',
+                  'Shift swap',
                   textAlign: TextAlign.right,
                   style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
