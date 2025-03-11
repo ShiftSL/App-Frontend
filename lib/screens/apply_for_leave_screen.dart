@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:shift_sl/widgets/leave_widgets.dart';
 
-/// SHIFT SL brand colors
-const Color kPrimaryColor = Color(0xFF131313);
-const Color kSecondaryColor = Color(0xFF2AED8D);
-const Color kDarkColor = Color(0xFF242424);
-const Color kLightColor = Color(0xFFF7F7F7);
 
-class ApplyForLeaveSheet extends StatefulWidget {
-  const ApplyForLeaveSheet({Key? key}) : super(key: key);
+import '../utils/theme/theme.dart';
+
+class ApplyForLeaveScreen extends StatefulWidget {
+  const ApplyForLeaveScreen({Key? key}) : super(key: key);
 
   @override
-  State<ApplyForLeaveSheet> createState() => _ApplyForLeaveSheetState();
+  State<ApplyForLeaveScreen> createState() => _ApplyForLeaveScreenState();
 }
 
-class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
+class _ApplyForLeaveScreenState extends State<ApplyForLeaveScreen> {
   String _selectedType = 'Casual';
   String? _selectedShift;
   final TextEditingController _causeController = TextEditingController();
@@ -22,7 +19,7 @@ class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now();
 
-  bool _isSingleDayLeave = true; // Default mode: One Day Leave
+  bool _isSingleDayLeave = true; // Default mode: One Day
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -37,7 +34,7 @@ class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
         if (isStartDate) {
           _startDate = pickedDate;
           if (!_isSingleDayLeave && _endDate.isBefore(_startDate)) {
-            _endDate = _startDate; // Ensure correct order
+            _endDate = _startDate;
           }
         } else {
           _endDate = pickedDate;
@@ -59,9 +56,9 @@ class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
-      initialChildSize: 0.85,
-      minChildSize: 0.75,
-      maxChildSize: 0.9,
+      initialChildSize: 0.6, // Half-screen modal
+      minChildSize: 0.5,
+      maxChildSize: 0.75,
       builder: (context, scrollController) {
         return Container(
           padding: const EdgeInsets.all(20),
@@ -96,23 +93,21 @@ class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
               _buildToggleButtons(),
 
               // Leave Type Dropdown
-              _buildDropdown("Type", _selectedType, ["Casual", "Sick", "Special"], (value) {
+              buildDropdown("Type", _selectedType, ["Casual", "Sick", "Special"], (value) {
                 setState(() => _selectedType = value!);
               }),
 
               // Cause Text Field
-              _buildTextField("Cause", "Enter reason", _causeController),
+              buildTextField("Cause", "Enter reason", _causeController),
 
-              // Date Picker: Start Date
-              _buildDatePicker("From", _startDate, () => _selectDate(context, true)),
+              // Date Pickers
+              buildDatePicker("From", _startDate, () => _selectDate(context, true)),
 
-              // Date Picker: End Date (Only if in "Few Days" mode)
               if (!_isSingleDayLeave)
-                _buildDatePicker("To", _endDate, () => _selectDate(context, false)),
+                buildDatePicker("To", _endDate, () => _selectDate(context, false)),
 
-              // Shift selection (Only if "One Day" mode)
               if (_isSingleDayLeave)
-                _buildDropdown("Shift", _selectedShift, ["Morning", "Day", "Night"], (value) {
+                buildDropdown("Shift", _selectedShift, ["Morning", "Day", "Night"], (value) {
                   setState(() => _selectedShift = value!);
                 }),
 
@@ -122,8 +117,8 @@ class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildButton("Cancel", kDarkColor, Colors.white, () => Navigator.pop(context)),
-                  _buildButton("Apply for Leave", kSecondaryColor, kPrimaryColor, _applyForLeave),
+                  buildButton("Cancel", kDarkColor, Colors.white, () => Navigator.pop(context)),
+                  buildButton("Apply for Leave", kSecondaryColor, kPrimaryColor, _applyForLeave),
                 ],
               ),
             ],
@@ -170,111 +165,6 @@ class _ApplyForLeaveSheetState extends State<ApplyForLeaveSheet> {
             fontWeight: FontWeight.bold,
           ),
         ),
-      ),
-    );
-  }
-
-  // Dropdown UI
-  Widget _buildDropdown(String label, String? selectedValue, List<String> items, ValueChanged<String?> onChanged) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
-            ),
-            child: DropdownButtonFormField<String>(
-              value: selectedValue,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
-              ),
-              onChanged: onChanged,
-              items: items.map((value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value, style: TextStyle(color: kPrimaryColor)),
-                );
-              }).toList(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Text Field UI
-  Widget _buildTextField(String label, String hint, TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
-            ),
-            child: TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                hintText: hint,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
-                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  Widget _buildButton(String text, Color bgColor, Color textColor, VoidCallback onPressed) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: bgColor,
-        foregroundColor: textColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-      ),
-      child: Text(text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-    );
-  }
-
-  // Date Picker UI
-  Widget _buildDatePicker(String label, DateTime date, VoidCallback onTap) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          GestureDetector(
-            onTap: onTap,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(DateFormat('EEEE, MMM d').format(date)),
-                  const Icon(Icons.calendar_today, color: kDarkColor),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
