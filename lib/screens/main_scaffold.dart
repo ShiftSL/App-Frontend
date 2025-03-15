@@ -43,32 +43,41 @@ class _MainScaffoldState extends State<MainScaffold> {
           ),
           child: ClipRRect(
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(30),
             ),
             child: BottomNavigationBar(
               currentIndex: _currentIndex,
               selectedItemColor: ShiftslColors.primaryColor,
               unselectedItemColor: const Color(0xFF818181),
-
               onTap: (index) => setState(() => _currentIndex = index),
               type: BottomNavigationBarType.fixed, // use fixed for 4+ items
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Iconsax.home),
+                  activeIcon:
+                      Icon(Iconsax.home_15, color: ShiftslColors.primaryColor),
                   label: 'Home',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Iconsax.calendar),
+                  icon: Icon(Iconsax.calendar_2),
+                  activeIcon: Icon(Iconsax.calendar_25,
+                      color: ShiftslColors.primaryColor),
                   label: 'Schedule',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Iconsax.notification),
+                  icon: Icon(Iconsax.notification_bing4),
+                  activeIcon: Icon(Iconsax.notification_bing5,
+                      color: ShiftslColors.primaryColor),
                   label: 'Notification',
                 ),
                 BottomNavigationBarItem(
-                  icon: Icon(Iconsax.profile_circle),
-                  label: 'Profile',
+                  icon: Icon(Iconsax.menu_board4),
+                  activeIcon: Icon(Iconsax.menu_board5,
+                      color: ShiftslColors.primaryColor),
+                  label: 'Menu',
                 ),
               ],
             ),

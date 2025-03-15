@@ -24,8 +24,8 @@ class ShiftCardV2 extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     backgroundColor: Colors.white,
-                    child:
-                        Icon(Icons.person, color: ShiftslColors.secondaryColor),
+                    child: Icon(Iconsax.profile,
+                        color: ShiftslColors.secondaryColor),
                   ),
                   const SizedBox(width: 8),
                   Text(

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -7,7 +5,7 @@ import 'package:shift_sl/screens/edit_profile_screen.dart';
 import 'package:shift_sl/utils/constants/colors.dart';
 import 'package:shift_sl/utils/constants/sizes.dart';
 import 'package:shift_sl/widgets/shift_card.dart';
-import 'package:shift_sl/widgets/shift_card_v2.dart';
+import 'package:shift_sl/widgets/leave_shift_card_v2.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class ShiftManagementScreen extends StatefulWidget {
@@ -74,7 +72,7 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
             holidayPredicate: (day) => day.weekday == DateTime.sunday,
           ),
           const SizedBox(height: 16),
-          ShiftCardV2(),
+          LeaveShiftCardV2(),
         ],
       ),
     );

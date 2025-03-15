@@ -4,7 +4,7 @@ import 'package:shift_sl/features/core/schedule/schedule_screen_v2.dart';
 import 'package:shift_sl/screens/schedule_screen.dart';
 import 'package:shift_sl/utils/constants/colors.dart';
 import 'package:shift_sl/utils/constants/sizes.dart';
-import 'package:shift_sl/widgets/shift_card_v2.dart';
+import 'package:shift_sl/widgets/leave_shift_card_v2.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const CircleAvatar(
                     radius: 50,
                     backgroundImage:
-                        AssetImage('assets/images/doctor_avatar.png'),
+                        AssetImage('assets/images/doctor_profile.jpg'),
                   ),
                   const SizedBox(width: 16),
                   Column(
@@ -169,27 +169,33 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            // const SizedBox(height: 8),
+            const SizedBox(height: 10),
             // Build "today" shift card
             // _buildShiftCard(todaysShift),
-            ShiftCardV2(),
-            // const SizedBox(height: 24),
+            LeaveShiftCardV2(),
+            const SizedBox(height: 10),
             // "Upcoming Shifts"
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 "Upcoming Shifts",
-                style: Theme.of(context).textTheme.titleMedium,
+                style: TextStyle(
+                  color: ShiftslColors.primaryColor,
+                  fontSize: ShiftslSizes.fontSizeLg,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             // Build upcoming shift cards
-            Column(
-              children: upcomingShifts
-                  .map((shift) => _buildShiftCard(shift))
-                  .toList(),
-            ),
-            const SizedBox(height: 20),
+            // Column(
+            //   children: upcomingShifts
+            //       .map((shift) => _buildShiftCard(shift))
+            //       .toList(),
+            // ),
+            // const SizedBox(height: 20),
+            LeaveShiftCardV2(),
+            LeaveShiftCardV2(),
           ],
         ),
       ),

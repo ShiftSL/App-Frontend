@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 /// Mock JSON data for shifts.
 /// Keys are dates in yyyy-MM-dd format.
@@ -94,19 +95,44 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day);
 
     if (selectedOnly.isBefore(todayOnly)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This session is in the past.')),
+      final snackBar = SnackBar(
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        content: AwesomeSnackbarContent(
+          title: 'On Snap!',
+          message: 'This session is in the past.',
+
+          /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
+          contentType: ContentType.failure,
+        ),
       );
-      return;
+
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
     }
+
     if (DateUtils.isSameDay(selectedOnly, todayOnly)) {
       final String shiftType = shiftData['timeLabel'] ?? '';
       final int shiftStartHour = getStartHour(shiftType);
       if (now.hour >= shiftStartHour) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('This session has already started.')),
+        final snackBar = SnackBar(
+          elevation: 0,
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          content: AwesomeSnackbarContent(
+            title: 'On Snap!',
+            message: 'This session has already started.',
+
+            /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
+            contentType: ContentType.failure,
+          ),
         );
-        return;
+
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(snackBar);
       }
     }
     _showStatusDialog(shiftData);
