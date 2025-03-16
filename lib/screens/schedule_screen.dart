@@ -11,7 +11,7 @@ final Map<String, List<Map<String, String>>> mockShifts = {
   '2025-02-20': [
     {
       'timeLabel': 'Morning',
-      'timeRange': '6:00 AM - 12:00 Noon',
+      'timeRange': '7:00 AM - 01:00 Noon',
       'status': 'Attended',
     },
     {
@@ -35,7 +35,7 @@ final Map<String, List<Map<String, String>>> mockShifts = {
   '2025-03-10': [
     {
       'timeLabel': 'Morning',
-      'timeRange': '6:00 AM - 12:00 Noon',
+      'timeRange': '7:00 AM - 1:00 PM',
       'status': 'Leave',
     },
   ],

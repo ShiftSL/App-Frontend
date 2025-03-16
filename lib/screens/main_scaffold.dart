@@ -20,7 +20,7 @@ class _MainScaffoldState extends State<MainScaffold> {
   // List of screens for each tab.
   final List<Widget> _screens = [
     HomeScreen(), // Your home screen widget.
-    ScheduleScreen(), // Your schedule screen widget.
+    ShiftManagementScreen(), // Your schedule screen widget.
     const NotificationScreen(), // Your notification screen widget.
     const ProfileScreen(), // Your profile screen widget.
   ];

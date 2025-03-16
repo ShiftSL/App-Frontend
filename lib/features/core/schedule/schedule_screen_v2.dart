@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shift_sl/features/core/schedule/tab_item.dart';
 import 'package:shift_sl/screens/edit_profile_screen.dart';
 import 'package:shift_sl/utils/constants/colors.dart';
 import 'package:shift_sl/utils/constants/sizes.dart';
-import 'package:shift_sl/widgets/shift_card.dart';
 import 'package:shift_sl/widgets/leave_shift_card_v2.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -28,19 +28,49 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: DropdownButton<String>(
-          value: 'Ward 01',
-          items: ['Ward 01', 'Ward 02', 'Ward 03']
-              .map((ward) => DropdownMenuItem(value: ward, child: Text(ward)))
-              .toList(),
-          onChanged: (value) {},
+        title: Text(
+          'Schedule',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(text: 'My Shifts'),
-            Tab(text: 'Schedule'),
-          ],
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(40),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            child: Container(
+              height: 40,
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                color: const Color(0xFFFFFFFF),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 20,
+                    offset: Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: TabBar(
+                controller: _tabController,
+                indicatorSize: TabBarIndicatorSize.tab,
+                dividerColor: Colors.transparent,
+                indicator: const BoxDecoration(
+                  color: ShiftslColors.primaryColor,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                labelColor: Colors.white,
+                unselectedLabelColor: ShiftslColors.primaryColor,
+                tabs: const [
+                  TabItem(title: 'My Shifts'),
+                  TabItem(title: 'Schedule View'),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
       body: TabBarView(
