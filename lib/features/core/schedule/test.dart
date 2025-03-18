@@ -168,31 +168,31 @@ class ShiftCard extends StatelessWidget {
 
 
 //
-bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(40),
-          child: ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-            child: Container(
-              height: 40,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: ShiftslColors.primaryColor,
-              ),
-              child: const TabBar(
-                indicatorSize: TabBarIndicatorSize.tab,
-                dividerColor: ShiftslColors.primaryColor,
-                indicator: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.white,
-                tabs: [
-                  TabItem(title: 'My Shifts'),
-                  TabItem(title: 'Schedule View'),
-                ],
-              ),
-            ),
-          ),
-        ),
+// bottom: PreferredSize(
+//           preferredSize: const Size.fromHeight(40),
+//           child: ClipRRect(
+//             borderRadius: const BorderRadius.all(Radius.circular(10)),
+//             child: Container(
+//               height: 40,
+//               margin: const EdgeInsets.symmetric(horizontal: 20),
+//               decoration: BoxDecoration(
+//                 borderRadius: BorderRadius.all(Radius.circular(10)),
+//                 color: ShiftslColors.primaryColor,
+//               ),
+//               child: const TabBar(
+//                 indicatorSize: TabBarIndicatorSize.tab,
+//                 dividerColor: ShiftslColors.primaryColor,
+//                 indicator: BoxDecoration(
+//                   color: Colors.white,
+//                   borderRadius: BorderRadius.all(Radius.circular(10)),
+//                 ),
+//                 labelColor: Colors.black,
+//                 unselectedLabelColor: Colors.white,
+//                 tabs: [
+//                   TabItem(title: 'My Shifts'),
+//                   TabItem(title: 'Schedule View'),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ),

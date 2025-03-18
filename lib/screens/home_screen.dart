@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:shift_sl/features/core/schedule/schedule_screen_v2.dart';
+import 'package:shift_sl/screens/notification_screen.dart';
 import 'package:shift_sl/screens/schedule_screen.dart';
 import 'package:shift_sl/utils/constants/colors.dart';
 import 'package:shift_sl/utils/constants/sizes.dart';
@@ -54,6 +56,15 @@ class _HomeScreenState extends State<HomeScreen> {
           width: 120,
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            padding: const EdgeInsets.only(right: 20),
+            onPressed: () => Get.to(() => const NotificationScreen()),
+            icon: const Icon(Iconsax.notification_bing5),
+            color: ShiftslColors.primaryColor,
+            iconSize: 30,
+          ),
+        ],
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -65,16 +76,16 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: ShiftslColors.primaryColor,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
                 children: [
                   const CircleAvatar(
-                    radius: 50,
+                    radius: 40,
                     backgroundImage:
                         AssetImage('assets/images/doctor_profile.jpg'),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 20),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
@@ -116,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 boxShadow: const [
                   BoxShadow(color: Colors.black12, blurRadius: 4)
                 ],
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
                 children: [
@@ -138,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: EdgeInsets.all(10),
                         backgroundColor: ShiftslColors.secondaryColor,
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
                         ),
                         side: BorderSide.none,
                       ),
@@ -158,14 +169,17 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: ShiftslSizes.defaultSpace),
 
             // "Today's Schedule"
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Your Next Shift",
-                style: TextStyle(
-                  color: ShiftslColors.primaryColor,
-                  fontSize: ShiftslSizes.fontSizeLg,
-                  fontWeight: FontWeight.w600,
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Your Next Shift",
+                  style: TextStyle(
+                    color: ShiftslColors.primaryColor,
+                    fontSize: ShiftslSizes.fontSizeLg,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
@@ -175,14 +189,17 @@ class _HomeScreenState extends State<HomeScreen> {
             LeaveShiftCardV2(),
             const SizedBox(height: 10),
             // "Upcoming Shifts"
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Upcoming Shifts",
-                style: TextStyle(
-                  color: ShiftslColors.primaryColor,
-                  fontSize: ShiftslSizes.fontSizeLg,
-                  fontWeight: FontWeight.w600,
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Upcoming Shifts",
+                  style: TextStyle(
+                    color: ShiftslColors.primaryColor,
+                    fontSize: ShiftslSizes.fontSizeLg,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),

@@ -11,8 +11,9 @@ class LeaveShiftCardV2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: ShiftslColors.primaryColor,
+      color: const Color(0xFFE9E9E9),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 0,
       child: Padding(
         padding: const EdgeInsets.all(ShiftslSizes.defaultSpace),
         child: Column(
@@ -21,7 +22,7 @@ class LeaveShiftCardV2 extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: Colors.white,
+                  backgroundColor: ShiftslColors.primaryColor,
                   child: Icon(Iconsax.sun_fog,
                       color: ShiftslColors.secondaryColor),
                 ),
@@ -29,7 +30,7 @@ class LeaveShiftCardV2 extends StatelessWidget {
                 Text(
                   'Morning Shift',
                   style: TextStyle(
-                      color: Colors.white,
+                      color: ShiftslColors.primaryColor,
                       fontSize: 16,
                       fontWeight: FontWeight.bold),
                 ),
@@ -63,24 +64,27 @@ class LeaveShiftCardV2 extends StatelessWidget {
               child: Text(
                 'Apply for Leave',
                 textAlign: TextAlign.right,
-                style: TextStyle(color: Colors.white70, fontSize: 14),
+                style:
+                    TextStyle(color: ShiftslColors.primaryColor, fontSize: 14),
               ),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
-                Icon(Iconsax.calendar, color: Colors.white70),
+                Icon(Iconsax.calendar, color: ShiftslColors.primaryColor),
                 const SizedBox(width: 8),
                 Text(
                   'Monday, 26 Jan',
-                  style: TextStyle(color: Colors.white, fontSize: 14),
+                  style: TextStyle(
+                      color: ShiftslColors.primaryColor, fontSize: 14),
                 ),
                 Spacer(),
-                Icon(Iconsax.clock, color: Colors.white70),
+                Icon(Iconsax.clock, color: ShiftslColors.primaryColor),
                 const SizedBox(width: 8),
                 Text(
                   '07:00 - 13:00',
-                  style: TextStyle(color: Colors.white, fontSize: 14),
+                  style: TextStyle(
+                      color: ShiftslColors.primaryColor, fontSize: 14),
                 ),
               ],
             ),

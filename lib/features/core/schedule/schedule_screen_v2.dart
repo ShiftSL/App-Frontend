@@ -8,6 +8,58 @@ import 'package:shift_sl/utils/constants/sizes.dart';
 import 'package:shift_sl/widgets/leave_shift_card_v2.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+/// Mock JSON data for shifts.
+/// Keys are dates in yyyy-MM-dd format.
+/// Note: We no longer include "startHour" in the JSON.
+/// Instead, we derive it from the shift type.
+final Map<String, List<Map<String, String>>> mockShifts = {
+  '2025-02-20': [
+    {
+      'timeLabel': 'Morning',
+      'timeRange': '7:00 AM - 01:00 Noon',
+      'status': 'Attended',
+    },
+    {
+      'timeLabel': 'Day',
+      'timeRange': '12:00 Noon - 6:00 PM',
+      'status': 'Leave',
+    },
+  ],
+  '2025-02-21': [
+    {
+      'timeLabel': 'Morning',
+      'timeRange': '6:00 AM - 12:00 Noon',
+      'status': 'Leave',
+    },
+    {
+      'timeLabel': 'Night',
+      'timeRange': '6:00 PM - 6:00 AM',
+      'status': 'Leave',
+    },
+  ],
+  '2025-03-10': [
+    {
+      'timeLabel': 'Morning',
+      'timeRange': '7:00 AM - 1:00 PM',
+      'status': 'Leave',
+    },
+  ],
+};
+
+/// Helper function that returns the start hour (0-23) based on shift type.
+int getStartHour(String shiftType) {
+  switch (shiftType.toLowerCase()) {
+    case 'morning':
+      return 7;
+    case 'day':
+      return 13;
+    case 'night':
+      return 19;
+    default:
+      return 0;
+  }
+}
+
 class ShiftManagementScreen extends StatefulWidget {
   ShiftManagementScreen({Key? key}) : super(key: key);
   @override
@@ -17,6 +69,13 @@ class ShiftManagementScreen extends StatefulWidget {
 class _ShiftManagementScreenState extends State<ShiftManagementScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  DateTime today = DateTime.now();
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  void _onDaySelected(DateTime Day, DateTime focusedDay) {
+    setState(() {
+      today = Day;
+    });
+  }
 
   @override
   void initState() {
@@ -50,7 +109,6 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
                   BoxShadow(
                     color: Colors.black12,
                     blurRadius: 20,
-                    offset: Offset(0, 1),
                   ),
                 ],
               ),
@@ -87,21 +145,36 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
     return SingleChildScrollView(
       child: Column(
         children: [
-          TableCalendar(
-            focusedDay: DateTime.now(),
-            firstDay: DateTime(2020),
-            lastDay: DateTime(2030),
-            calendarStyle: CalendarStyle(
-              // holidayDecoration:
-              //     BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-              // selectedDecoration:
-              //     BoxDecoration(color: Colors.grey, shape: BoxShape.circle),
-              todayDecoration:
-                  BoxDecoration(color: Colors.green, shape: BoxShape.circle),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              child: TableCalendar(
+                locale: 'en_US',
+                rowHeight: 50,
+                focusedDay: today,
+                startingDayOfWeek: StartingDayOfWeek.monday,
+                firstDay: DateTime(2020, 1, 1),
+                lastDay: DateTime(2030, 12, 31),
+                availableGestures: AvailableGestures.all,
+                selectedDayPredicate: (day) => isSameDay(day, today),
+                onDaySelected: _onDaySelected,
+                calendarFormat: _calendarFormat,
+                //format change
+                onFormatChanged: (format) {
+                  if (_calendarFormat != format) {
+                    setState(() {
+                      _calendarFormat = format;
+                    });
+                  }
+                },
+                onPageChanged: (focusedDay) {
+                  today = focusedDay;
+                },
+              ),
             ),
-            holidayPredicate: (day) => day.weekday == DateTime.sunday,
           ),
           const SizedBox(height: 16),
+          Text('Selected Day : ${today.toString().split(" ")[0]}'),
           LeaveShiftCardV2(),
         ],
       ),

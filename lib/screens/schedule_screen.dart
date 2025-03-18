@@ -45,11 +45,11 @@ final Map<String, List<Map<String, String>>> mockShifts = {
 int getStartHour(String shiftType) {
   switch (shiftType.toLowerCase()) {
     case 'morning':
-      return 6;
+      return 7;
     case 'day':
-      return 12;
+      return 13;
     case 'night':
-      return 18;
+      return 19;
     default:
       return 0;
   }
@@ -197,7 +197,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     firstDay: DateTime(2020),
                     lastDay: DateTime(2030),
                     focusedDay: focusedDay,
-                    startingDayOfWeek: StartingDayOfWeek.sunday,
+                    startingDayOfWeek: StartingDayOfWeek.monday,
                     selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
                     onDaySelected: (selectedDay, focusedDay) {
                       setState(() {
