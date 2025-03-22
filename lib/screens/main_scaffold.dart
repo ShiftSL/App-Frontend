@@ -3,7 +3,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:shift_sl/features/core/schedule/schedule_screen_v2.dart';
 import 'package:shift_sl/utils/constants/colors.dart';
 import 'home_screen.dart';
-import 'schedule_screen.dart';
+// import 'schedule_screen.dart';
 import 'notification_screen.dart';
 import 'profile_screen.dart';
 

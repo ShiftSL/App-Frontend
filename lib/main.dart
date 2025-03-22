@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shift_sl/features/core/schedule/schedule_screen_v2.dart';
 import 'package:shift_sl/screens/sign_in_screen.dart';
 import 'package:shift_sl/screens/sign_up_screen.dart';
 import 'package:shift_sl/screens/main_scaffold.dart';
 import 'package:shift_sl/screens/notification_screen.dart';
-import 'package:shift_sl/screens/schedule_screen.dart';
+// import 'package:shift_sl/screens/schedule_screen.dart';
 import 'package:shift_sl/screens/swaps_screen.dart';
 import 'package:shift_sl/screens/apply_for_leave_screen.dart';
 import 'package:shift_sl/screens/edit_profile_screen.dart';
@@ -37,9 +38,10 @@ class ShiftSlApp extends StatelessWidget {
         GetPage(name: '/signUp', page: () => const SignUpScreen()),
         GetPage(name: '/home', page: () => const MainScaffold()),
         GetPage(name: '/notifications', page: () => const NotificationScreen()),
-        GetPage(name: '/schedule', page: () => const ScheduleScreen()),
+        GetPage(name: '/schedule', page: () => ShiftManagementScreen()),
         GetPage(name: '/swaps', page: () => const SwapsScreen()),
-        GetPage(name: '/applyForLeave', page: () => const ApplyForLeaveScreen()),
+        GetPage(
+            name: '/applyForLeave', page: () => const ApplyForLeaveScreen()),
         GetPage(name: '/editProfile', page: () => const EditProfileScreen()),
         GetPage(name: '/profile', page: () => const ProfileScreen()),
       ],
