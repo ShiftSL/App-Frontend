@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shift_sl/features/core/schedule/tab_item.dart';
 import 'package:shift_sl/utils/constants/colors.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:get/get.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -105,119 +106,172 @@ class NotificationScreen extends StatelessWidget {
         controller: _tabController,
         children: [
           // Shift Swap Tab
-          SingleChildScrollView(
-            padding: EdgeInsets.all(padding),
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: swapNotifications.length,
-              separatorBuilder: (context, index) => SizedBox(height: padding),
-              itemBuilder: (context, index) {
-                final item = swapNotifications[index];
-                return Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    leading: const CircleAvatar(
-                      backgroundColor: Colors.orange,
-                      child: Icon(Icons.swap_calls, color: Colors.white),
-                    ),
-                    title: Text(item['title'] ?? ''),
-                    subtitle: Text(item['subtitle'] ?? ''),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Swap request approved.')),
-                            );
-                          },
-                          child: const Text('Approve'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Swap request denied.')),
-                            );
-                          },
-                          child: const Text('Deny'),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+          _shiftSwapView(
+              padding: padding, swapNotifications: swapNotifications),
           // Claim Shift Tab
-          SingleChildScrollView(
-            padding: EdgeInsets.all(padding),
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: claimNotifications.length,
-              separatorBuilder: (context, index) => SizedBox(height: padding),
-              itemBuilder: (context, index) {
-                final item = claimNotifications[index];
-                return Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    leading: const CircleAvatar(
-                      backgroundColor: Colors.green,
-                      child:
-                          Icon(Icons.assignment_turned_in, color: Colors.white),
-                    ),
-                    title: Text(item['title'] ?? ''),
-                    subtitle: Text(item['subtitle'] ?? ''),
-                    trailing: TextButton(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Shift claimed.')),
-                        );
-                      },
-                      child: const Text('Claim'),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+          _claimShiftView(
+              padding: padding, claimNotifications: claimNotifications),
           // General Notification Tab
-          SingleChildScrollView(
-            padding: EdgeInsets.all(padding),
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: generalNotifications.length,
-              separatorBuilder: (context, index) => SizedBox(height: padding),
-              itemBuilder: (context, index) {
-                final item = generalNotifications[index];
-                return Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    leading: const CircleAvatar(
-                      backgroundColor: Colors.blue,
-                      child: Icon(Icons.info, color: Colors.white),
-                    ),
-                    title: Text(item['title'] ?? ''),
-                    subtitle: Text(item['subtitle'] ?? ''),
-                  ),
-                );
-              },
-            ),
-          ),
+          _generalNotificationView(
+              padding: padding, generalNotifications: generalNotifications),
         ],
+      ),
+    );
+  }
+}
+
+class _generalNotificationView extends StatelessWidget {
+  const _generalNotificationView({
+    super.key,
+    required this.padding,
+    required this.generalNotifications,
+  });
+
+  final double padding;
+  final List<Map<String, String>> generalNotifications;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(padding),
+      child: ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: generalNotifications.length,
+        separatorBuilder: (context, index) => SizedBox(height: padding),
+        itemBuilder: (context, index) {
+          final item = generalNotifications[index];
+          return Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: Color(0xFF79C3FF),
+                child: Icon(Iconsax.calendar, color: Colors.white),
+              ),
+              title: Text(item['title'] ?? ''),
+              subtitle: Text(item['subtitle'] ?? ''),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _claimShiftView extends StatelessWidget {
+  const _claimShiftView({
+    super.key,
+    required this.padding,
+    required this.claimNotifications,
+  });
+
+  final double padding;
+  final List<Map<String, String>> claimNotifications;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(padding),
+      child: ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: claimNotifications.length,
+        separatorBuilder: (context, index) => SizedBox(height: padding),
+        itemBuilder: (context, index) {
+          final item = claimNotifications[index];
+          return Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: Colors.green,
+                child: Icon(Iconsax.calendar_edit, color: Colors.white),
+              ),
+              title: Text(
+                item['title'] ?? '',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Text(item['subtitle'] ?? ''),
+              trailing: TextButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Shift claimed.')),
+                  );
+                },
+                child: const Text('Claim'),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _shiftSwapView extends StatelessWidget {
+  const _shiftSwapView({
+    super.key,
+    required this.padding,
+    required this.swapNotifications,
+  });
+
+  final double padding;
+  final List<Map<String, String>> swapNotifications;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(padding),
+      child: ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: swapNotifications.length,
+        separatorBuilder: (context, index) => SizedBox(height: padding),
+        itemBuilder: (context, index) {
+          final item = swapNotifications[index];
+          return Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: Colors.orange,
+                child: Icon(Iconsax.arrow_swap_horizontal, color: Colors.white),
+              ),
+              title: Text(item['title'] ?? ''),
+              subtitle: Text(item['subtitle'] ?? ''),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Swap request approved.')),
+                      );
+                    },
+                    child: const Text('Approve'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Swap request denied.')),
+                      );
+                    },
+                    child: const Text('Deny'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
