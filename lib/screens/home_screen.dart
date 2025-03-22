@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shift_sl/features/core/schedule/schedule_screen_v2.dart';
 import 'package:shift_sl/screens/notification_screen.dart';
-import 'package:shift_sl/screens/schedule_screen.dart';
+// import 'package:shift_sl/screens/schedule_screen.dart';
 import 'package:shift_sl/utils/constants/colors.dart';
 import 'package:shift_sl/utils/constants/sizes.dart';
 import 'package:shift_sl/widgets/leave_shift_card_v2.dart';
@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 130,
                     height: 50,
                     child: FilledButton(
-                      onPressed: () => Get.to(() => const ScheduleScreen()),
+                      onPressed: () => Get.to(() => ShiftManagementScreen()),
                       style: FilledButton.styleFrom(
                         padding: EdgeInsets.all(10),
                         backgroundColor: ShiftslColors.secondaryColor,
