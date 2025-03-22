@@ -6,7 +6,7 @@ class ShiftslColors {
   //app basic colors
   static const Color primaryColor = Color(0xFF2B3C56);
   static const Color secondaryColor = Color(0xFF2AED8D);
-  static const Color accentColor = Color(0xFFC7C7C7);
+  static const Color accentColor = Color.fromARGB(255, 83, 117, 167);
 
   // Text colors
   static const Color textPrimary = Color(0xFF333333);

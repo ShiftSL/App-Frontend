@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 /// Mock JSON data for shifts.
 /// Keys are dates in yyyy-MM-dd format.
@@ -10,7 +11,7 @@ final Map<String, List<Map<String, String>>> mockShifts = {
   '2025-02-20': [
     {
       'timeLabel': 'Morning',
-      'timeRange': '6:00 AM - 12:00 Noon',
+      'timeRange': '7:00 AM - 01:00 Noon',
       'status': 'Attended',
     },
     {
@@ -34,7 +35,7 @@ final Map<String, List<Map<String, String>>> mockShifts = {
   '2025-03-10': [
     {
       'timeLabel': 'Morning',
-      'timeRange': '6:00 AM - 12:00 Noon',
+      'timeRange': '7:00 AM - 1:00 PM',
       'status': 'Leave',
     },
   ],
@@ -44,11 +45,11 @@ final Map<String, List<Map<String, String>>> mockShifts = {
 int getStartHour(String shiftType) {
   switch (shiftType.toLowerCase()) {
     case 'morning':
-      return 6;
+      return 7;
     case 'day':
-      return 12;
+      return 13;
     case 'night':
-      return 18;
+      return 19;
     default:
       return 0;
   }
@@ -94,19 +95,44 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day);
 
     if (selectedOnly.isBefore(todayOnly)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This session is in the past.')),
+      final snackBar = SnackBar(
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        content: AwesomeSnackbarContent(
+          title: 'On Snap!',
+          message: 'This session is in the past.',
+
+          /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
+          contentType: ContentType.failure,
+        ),
       );
-      return;
+
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
     }
+
     if (DateUtils.isSameDay(selectedOnly, todayOnly)) {
       final String shiftType = shiftData['timeLabel'] ?? '';
       final int shiftStartHour = getStartHour(shiftType);
       if (now.hour >= shiftStartHour) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('This session has already started.')),
+        final snackBar = SnackBar(
+          elevation: 0,
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          content: AwesomeSnackbarContent(
+            title: 'On Snap!',
+            message: 'This session has already started.',
+
+            /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
+            contentType: ContentType.failure,
+          ),
         );
-        return;
+
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(snackBar);
       }
     }
     _showStatusDialog(shiftData);
@@ -171,7 +197,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     firstDay: DateTime(2020),
                     lastDay: DateTime(2030),
                     focusedDay: focusedDay,
-                    startingDayOfWeek: StartingDayOfWeek.sunday,
+                    startingDayOfWeek: StartingDayOfWeek.monday,
                     selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
                     onDaySelected: (selectedDay, focusedDay) {
                       setState(() {
