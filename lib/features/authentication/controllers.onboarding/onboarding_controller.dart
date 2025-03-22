@@ -30,7 +30,6 @@ class OnboardingController extends GetxController {
 
   ///update current page index when skip button clicked
   void skipPage() {
-    currentPageIndex.value = 2;
-    pageController.jumpTo(2);
+    Get.offAll(const SignInScreen());
   }
 }
