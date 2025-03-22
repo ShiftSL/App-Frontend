@@ -37,19 +37,19 @@ class ProfileScreen extends StatelessWidget {
             fontSize: 20,
           ),
         ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.all(ShiftslSizes.defaultSpace),
-          child: Column(
-            children: [
-              SizedBox(
-                width: 100,
-                height: 100,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: Image.asset('assets/images/doctor_avatar.png'),
+
+        body: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.all(ShiftslSizes.defaultSpace),
+            child: Column(
+              children: [
+                SizedBox(
+                  width: 100,
+                  height: 100,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Image.asset('assets/images/doctor_profile.jpg'),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
