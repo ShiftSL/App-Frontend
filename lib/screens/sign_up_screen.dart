@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/shift_sl_logo.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -14,79 +15,70 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _hospitalController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  void _register() async {
-    final success = true;
-    if (!mounted) return;
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Account created! Please sign in.')),
-      );
-      Navigator.pop(context);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registration failed!')),
-      );
+  Future<void> _register() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final name = _nameController.text.trim();
+    final hospital = _hospitalController.text.trim();
+
+    if (email.isEmpty || password.isEmpty || name.isEmpty || hospital.isEmpty) {
+      _showMessage('Please fill in all fields');
+      return;
     }
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      _showMessage('Account created! Please sign in.');
+      Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      _showMessage('Registration failed: ${e.message}');
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final verticalSpacing = screenWidth * 0.1;
-    final logoWidth = screenWidth * 0.8;
-    final padding = screenWidth * 0.05;
-
     return Scaffold(
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(padding),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: verticalSpacing),
-            ShiftSlLogo(width: logoWidth, height: logoWidth * (350 / 400)),
-            SizedBox(height: verticalSpacing),
+            const ShiftSlLogo(width: 200, height: 175),
+            const SizedBox(height: 30),
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Full Name',
-                prefixIcon: Icon(Icons.person),
-              ),
+              decoration: const InputDecoration(labelText: 'Full Name'),
             ),
-            SizedBox(height: padding),
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                prefixIcon: Icon(Icons.email),
-              ),
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
-            SizedBox(height: padding),
             TextField(
               controller: _hospitalController,
-              decoration: const InputDecoration(
-                labelText: 'Hospital/Institution',
-                prefixIcon: Icon(Icons.local_hospital),
-              ),
+              decoration: const InputDecoration(labelText: 'Hospital/Institution'),
             ),
-            SizedBox(height: padding),
             TextField(
               controller: _passwordController,
               obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                prefixIcon: Icon(Icons.lock),
-              ),
+              decoration: const InputDecoration(labelText: 'Password'),
             ),
-            SizedBox(height: padding * 1.5),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _register,
-              child: const Text('Sign Up', style: TextStyle(fontSize: 16)),
+              child: const Text('Sign Up'),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text(
-                'Already have an account? Sign In',
-                style: TextStyle(fontSize: 14),
-              ),
+              child: const Text("Already have an account? Sign In"),
             ),
           ],
         ),

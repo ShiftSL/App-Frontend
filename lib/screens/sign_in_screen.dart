@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/shift_sl_logo.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -12,60 +14,69 @@ class _SignInScreenState extends State<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  void _signIn() async {
-    final success = true;
-    if (!mounted) return;
-    if (success) {
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sign in failed!')),
-      );
+  Future<void> _signIn() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      _showMessage('Please enter both email and password');
+      return;
     }
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final prefs = await SharedPreferences.getInstance();
+      final expiryDate = DateTime.now().add(const Duration(days: 90));
+      await prefs.setString('sessionExpiry', expiryDate.toIso8601String());
+
+      final hasOnboarded = prefs.getBool('hasOnboarded') ?? false;
+      if (!hasOnboarded) {
+        await prefs.setBool('hasOnboarded', true);
+        Navigator.pushReplacementNamed(context, '/onboarding');
+      } else {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } on FirebaseAuthException catch (e) {
+      _showMessage('Sign in failed: ${e.message}');
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final verticalSpacing = screenWidth * 0.1;
-    final logoWidth = screenWidth * 0.8;
-    final padding = screenWidth * 0.05;
-
     return Scaffold(
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(padding),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: verticalSpacing),
-            ShiftSlLogo(width: logoWidth, height: logoWidth * (350 / 400)),
-            SizedBox(height: verticalSpacing),
+            const ShiftSlLogo(width: 200, height: 175),
+            const SizedBox(height: 30),
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                prefixIcon: Icon(Icons.email),
-              ),
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
-            SizedBox(height: padding),
             TextField(
               controller: _passwordController,
               obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                prefixIcon: Icon(Icons.lock),
-              ),
+              decoration: const InputDecoration(labelText: 'Password'),
             ),
-            SizedBox(height: padding * 1.5),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _signIn,
-              child: const Text('Sign In', style: TextStyle(fontSize: 16)),
+              child: const Text('Sign In'),
             ),
             TextButton(
               onPressed: () => Navigator.pushNamed(context, '/signUp'),
-              child: const Text(
-                'Don’t have an account? Sign Up',
-                style: TextStyle(fontSize: 14),
-              ),
+              child: const Text("Don't have an account? Sign Up"),
             ),
           ],
         ),
