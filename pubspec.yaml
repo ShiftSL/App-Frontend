@@ -22,12 +22,12 @@ dependencies:
 
   get: ^4.7.2
   get_storage: ^2.1.1
-
   firebase_core: ^2.25.4
-  firebase_auth: ^4.16.0  # ✅ <-- Update this!
+  firebase_auth: ^4.17.8
   cloud_firestore: ^4.13.5
   firebase_messaging: ^14.7.8
   firebase_storage: ^11.6.6
+
 
 
   shared_preferences: ^2.2.2  # Latest stable version
