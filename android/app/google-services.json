@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "460862358133",
+    "project_id": "shiftsl",
+    "storage_bucket": "shiftsl.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:460862358133:android:0cc8910ea6bf5ad0ca6e3c",
+        "android_client_info": {
+          "package_name": "com.example.untitled1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAugrZGO9pZey3700nuyoKO4FfMU0oz5vQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -11,162 +11,72 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  final _phoneController = TextEditingController();
-  final _otpController = TextEditingController();
-  bool _isOtpSent = false;
-  String? _verificationId;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    _checkSession();
-  }
+  Future<void> _signIn() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
 
-  Future<void> _checkSession() async {
-    final prefs = await SharedPreferences.getInstance();
-    final sessionExpiry = prefs.getString('sessionExpiry');
-    if (sessionExpiry != null) {
-      final expiryDate = DateTime.parse(sessionExpiry);
-      if (expiryDate.isAfter(DateTime.now())) {
-        Navigator.pushReplacementNamed(context, '/home');
+    if (email.isEmpty || password.isEmpty) {
+      _showMessage('Please enter both email and password');
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final prefs = await SharedPreferences.getInstance();
+      final expiryDate = DateTime.now().add(const Duration(days: 90));
+      await prefs.setString('sessionExpiry', expiryDate.toIso8601String());
+
+      final hasOnboarded = prefs.getBool('hasOnboarded') ?? false;
+      if (!hasOnboarded) {
+        await prefs.setBool('hasOnboarded', true);
+        Navigator.pushReplacementNamed(context, '/onboarding');
       } else {
-        prefs.remove('sessionExpiry');
+        Navigator.pushReplacementNamed(context, '/home');
       }
+    } on FirebaseAuthException catch (e) {
+      _showMessage('Sign in failed: ${e.message}');
     }
   }
 
-  Future<void> _startPhoneAuth() async {
-    final phone = _phoneController.text.trim();
-    if (phone.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a phone number')),
-      );
-      return;
-    }
-
-    try {
-      await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: phone,
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          await FirebaseAuth.instance.signInWithCredential(credential);
-          _onSignInSuccess();
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Verification failed: ${e.message}')),
-          );
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          setState(() {
-            _isOtpSent = true;
-            _verificationId = verificationId;
-          });
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {},
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
-    }
-  }
-
-  Future<void> _verifyOtp() async {
-    final otp = _otpController.text.trim();
-    if (_verificationId == null || otp.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid OTP or verification ID')),
-      );
-      return;
-    }
-
-    try {
-      final credential = PhoneAuthProvider.credential(
-        verificationId: _verificationId!,
-        smsCode: otp,
-      );
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      _onSignInSuccess();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
-    }
-  }
-
-  Future<void> _onSignInSuccess() async {
-    final prefs = await SharedPreferences.getInstance();
-    final expiryDate = DateTime.now().add(const Duration(days: 90));
-    await prefs.setString('sessionExpiry', expiryDate.toIso8601String());
-
-    // Check if onboarding has been shown
-    final hasOnboarded = prefs.getBool('hasOnboarded') ?? false;
-    if (!hasOnboarded) {
-      await prefs.setBool('hasOnboarded', true);
-      Navigator.pushReplacementNamed(context, '/onboarding');
-    } else {
-      Navigator.pushReplacementNamed(context, '/home');
-    }
-  }
-
-  /// **Temporary Bypass Function**
-  void _bypassAuthentication() async {
-    final prefs = await SharedPreferences.getInstance();
-    final expiryDate = DateTime.now().add(const Duration(days: 90));
-    await prefs.setString('sessionExpiry', expiryDate.toIso8601String());
-
-    Navigator.pushReplacementNamed(context, '/home');
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final verticalSpacing = screenWidth * 0.1;
-    final logoWidth = screenWidth * 0.8;
-    final padding = screenWidth * 0.05;
-
     return Scaffold(
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(padding),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: verticalSpacing),
-            ShiftSlLogo(width: logoWidth, height: logoWidth * (350 / 400)),
-            SizedBox(height: verticalSpacing),
+            const ShiftSlLogo(width: 200, height: 175),
+            const SizedBox(height: 30),
             TextField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'Phone Number',
-                prefixIcon: Icon(Icons.phone),
-              ),
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
-            if (_isOtpSent) ...[
-              SizedBox(height: padding),
-              TextField(
-                controller: _otpController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'OTP',
-                  prefixIcon: Icon(Icons.lock),
-                ),
-              ),
-            ],
-            SizedBox(height: padding * 1.5),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Password'),
+            ),
+            const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _isOtpSent ? _verifyOtp : _startPhoneAuth,
-              child: Text(_isOtpSent ? 'Verify OTP' : 'Send OTP',
-                  style: const TextStyle(fontSize: 16)),
+              onPressed: _signIn,
+              child: const Text('Sign In'),
             ),
-            SizedBox(height: padding),
-
-            /// **Temporary Bypass Button**
             TextButton(
-              onPressed: _bypassAuthentication,
-              child: const Text(
-                'Skip Authentication (Temporary)',
-                style: TextStyle(fontSize: 14, color: Colors.red),
-              ),
+              onPressed: () => Navigator.pushNamed(context, '/signUp'),
+              child: const Text("Don't have an account? Sign Up"),
             ),
           ],
         ),

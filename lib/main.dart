@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shift_sl/features/authentication/screens/onboarding.dart';
 import 'package:shift_sl/screens/sign_in_screen.dart';
 import 'package:shift_sl/screens/sign_up_screen.dart';
 import 'package:shift_sl/screens/main_scaffold.dart';
@@ -11,10 +11,12 @@ import 'package:shift_sl/screens/swaps_screen.dart';
 import 'package:shift_sl/screens/apply_for_leave_screen.dart';
 import 'package:shift_sl/screens/edit_profile_screen.dart';
 import 'package:shift_sl/screens/profile_screen.dart';
-import 'package:shift_sl/utils/theme/theme.dart'; // Contains shiftSlTheme
+import 'package:shift_sl/features/authentication/screens/onboarding.dart';
+import 'package:shift_sl/utils/theme/theme.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const ShiftSlApp());
 }
 
@@ -27,7 +29,6 @@ class ShiftSlApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'ShiftSL',
       theme: shiftSlTheme,
-      // Start with the splash screen to decide navigation based on session and onboarding status.
       initialRoute: '/splash',
       getPages: [
         GetPage(name: '/splash', page: () => const SplashScreen()),
@@ -46,10 +47,6 @@ class ShiftSlApp extends StatelessWidget {
   }
 }
 
-/// The SplashScreen widget is used to decide which screen to navigate to:
-/// - If a valid session exists (i.e. within 30 days), it navigates to the home screen.
-/// - If there is no valid session and the user hasn't onboarded, it navigates to the onboarding screen.
-/// - Otherwise, it goes to the sign-in screen.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
@@ -58,7 +55,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -70,18 +66,13 @@ class _SplashScreenState extends State<SplashScreen> {
     final sessionExpiry = prefs.getString('sessionExpiry');
     final hasOnboarded = prefs.getBool('hasOnboarded') ?? false;
 
-    // Check if the session is still valid
     if (sessionExpiry != null &&
         DateTime.parse(sessionExpiry).isAfter(DateTime.now())) {
-      // Session is valid, navigate directly to the home screen.
       Get.offAllNamed('/home');
     } else {
-      // Session expired or doesn't exist; check the onboarding status.
       if (!hasOnboarded) {
-        // User hasn't onboarded, navigate to the onboarding screen.
         Get.offAllNamed('/onboarding');
       } else {
-        // Otherwise, prompt the user to sign in.
         Get.offAllNamed('/signIn');
       }
     }
