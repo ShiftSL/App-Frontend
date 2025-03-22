@@ -3,10 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
-/// Mock JSON data for shifts.
-/// Keys are dates in yyyy-MM-dd format.
-/// Note: We no longer include "startHour" in the JSON.
-/// Instead, we derive it from the shift type.
+
 final Map<String, List<Map<String, String>>> mockShifts = {
   '2025-02-20': [
     {
@@ -83,11 +80,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     });
   }
 
-  /// Handle tap on a shift card.
-  /// - If the selected date is in the past, show a message (read-only).
-  /// - For today's date, calculate the shift start hour from the shift type.
-  ///   If current hour >= shift start hour, then the session has already started.
-  /// - Otherwise, open the status update dialog.
+
   void _handleShiftTap(Map<String, dynamic> shiftData) {
     final now = DateTime.now();
     final todayOnly = DateTime(now.year, now.month, now.day);

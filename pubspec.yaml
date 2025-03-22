@@ -30,6 +30,15 @@ dependencies:
   iconsax: ^0.0.8
   google_fonts: ^6.2.1
 
+  firebase_core: ^2.25.4
+  firebase_auth: ^4.16.0  # ✅ <-- Update this!
+  cloud_firestore: ^4.13.5
+  firebase_messaging: ^14.7.8
+  firebase_storage: ^11.6.6
+
+
+  shared_preferences: ^2.2.2  # Latest stable version
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
