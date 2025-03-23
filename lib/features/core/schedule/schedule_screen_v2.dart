@@ -8,9 +8,11 @@ import 'package:shift_sl/screens/edit_profile_screen.dart';
 import 'package:shift_sl/utils/constants/colors.dart';
 import 'package:shift_sl/utils/constants/sizes.dart';
 import 'package:shift_sl/widgets/leave_shift_card_v2.dart';
+import 'package:shift_sl/widgets/swap_card_v2.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
+import 'package:shift_sl/features/core/schedule/widgets/my_shift_tab.dart';
 
 class ShiftManagementScreen extends StatefulWidget {
   ShiftManagementScreen({Key? key}) : super(key: key);
@@ -44,8 +46,8 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
     });
 
     try {
-      final response = await http.get(Uri.parse(
-          'https://spring-app-284647065201.us-central1.run.app/api/shift/14'));
+      final response = await http
+          .get(Uri.parse('https://kings.backend.shiftsl.com/api/shift/2'));
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
@@ -79,7 +81,6 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
         });
       } else {
         setState(() {
-          _errorMessage = 'Failed to load shift data: ${response.statusCode}';
           _isLoading = false;
           _shiftData = {};
         });
@@ -231,7 +232,7 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
         controller: _tabController,
         children: [
           _buildMyShiftsTab(),
-          Center(child: Text('Schedule View Placeholder')),
+          _buildAllShiftsTab(),
         ],
       ),
     );
@@ -310,14 +311,94 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
             ),
           ),
           const SizedBox(height: 16),
-          _buildShiftContent(),
+          _buildMyShiftContent(),
           const SizedBox(height: 24),
         ],
       ),
     );
   }
 
-  Widget _buildShiftContent() {
+  Widget _buildAllShiftsTab() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: TableCalendar(
+              calendarBuilders: CalendarBuilders(
+                defaultBuilder: _calendarBuilder,
+              ),
+              locale: 'en_US',
+              rowHeight: 50,
+              focusedDay: _focusedDay,
+              startingDayOfWeek: StartingDayOfWeek.monday,
+              firstDay: DateTime(2020, 1, 1),
+              lastDay: DateTime(2030, 12, 31),
+              availableGestures: AvailableGestures.all,
+              selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+              onDaySelected: _onDaySelected,
+              calendarFormat: _calendarFormat,
+              onFormatChanged: (format) {
+                if (_calendarFormat != format) {
+                  setState(() {
+                    _calendarFormat = format;
+                  });
+                }
+              },
+              onPageChanged: (focusedDay) {
+                _focusedDay = focusedDay;
+              },
+              eventLoader: (day) {
+                // This helps the calendar know which days have events
+                return _shiftData[day.dateOnly()] ?? [];
+              },
+            ),
+          ),
+
+          // Calendar Legend
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Today's shift legend
+                Row(
+                  children: [
+                    Container(
+                      width: 12,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: ShiftslColors.primaryColor,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text("Allocated Shift"),
+                  ],
+                ),
+                const SizedBox(width: 20),
+                // Allocated shift legend
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+          Text(
+            'Selected Day: ${DateFormat('EEEE, MMMM d, yyyy').format(_selectedDay)}',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildAllShiftContent(),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMyShiftContent() {
     if (_isLoading) {
       return Center(child: CircularProgressIndicator());
     }
@@ -362,6 +443,64 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
       child: Column(
         children: shifts.map((shift) {
           return LeaveShiftCardV2(
+            shiftType: shift["shiftType"],
+            startTime: shift["startTime"],
+            endTime: shift["endTime"],
+            formattedStartTime: shift["formattedStartTime"],
+            formattedEndTime: shift["formattedEndTime"],
+            selectedDate: _selectedDay,
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildAllShiftContent() {
+    if (_isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Icon(Icons.error_outline, color: Colors.red, size: 48),
+              SizedBox(height: 16),
+              Text(
+                _errorMessage!,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.red),
+              ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _fetchShiftData,
+                child: Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final shifts = _shiftData[_selectedDay.dateOnly()] ?? [];
+
+    if (shifts.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text("No shift scheduled for this day"),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 16),
+      child: Column(
+        children: shifts.map((shift) {
+          return SwapCardV2(
+            doctorName: shift["docterName"],
             shiftType: shift["shiftType"],
             startTime: shift["startTime"],
             endTime: shift["endTime"],
