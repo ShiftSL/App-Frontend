@@ -46,8 +46,8 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
     });
 
     try {
-      final response = await http.get(Uri.parse(
-          'https://spring-app-284647065201.us-central1.run.app/api/shift/14'));
+      final response = await http
+          .get(Uri.parse('https://kings.backend.shiftsl.com/api/shift/2'));
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
@@ -81,7 +81,6 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
         });
       } else {
         setState(() {
-          _errorMessage = 'Failed to load shift data: ${response.statusCode}';
           _isLoading = false;
           _shiftData = {};
         });
