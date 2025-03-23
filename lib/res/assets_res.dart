@@ -8,4 +8,11 @@ class AssetsRes {
 
   static const String PROJECT_NAME = 'shift_sl';
   static const String PROJECT_VERSION = '1.0.0+1';
+  static const String GROUP = 'assets/images/on_boarding/Group.svg';
+  static const String EMPLOYEE_WORKS_ON_DEADLINES = 'assets/images/on_boarding/employee-works-on-deadlines.svg';
+  static const String ONBOARDING1 = 'assets/images/on_boarding/onboarding1.png';
+  static const String ONBOARDING2 = 'assets/images/on_boarding/onboarding2.png';
+  static const String ONBOARDING3 = 'assets/images/on_boarding/onboarding3.png';
+  static const String ADAPTIVE_ICON = 'assets/logos/adaptive_icon.png';
+  static const String ICONV2 = 'assets/logos/iconV2.png';
 }

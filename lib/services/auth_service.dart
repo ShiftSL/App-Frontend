@@ -1,16 +1,31 @@
+import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import '../models/login_response.dart';
+import '../utils/constants/api_constants.dart';
+
 class AuthService {
-  // Mock sign in
+  static const _storage = FlutterSecureStorage();
+
   static Future<bool> signIn(String email, String password) async {
-    // In a real app, perform an API request or Firebase auth
-    await Future.delayed(const Duration(seconds: 1));
-    // Return true if success, false if failure
-    return (email == 'test@example.com' && password == 'password123');
+    final response = await http.post(
+      Uri.parse(ApiConstants.loginUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'email': email, 'password': password}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final loginResponse = LoginResponse.fromJson(data);
+
+      await _storage.write(key: 'token', value: loginResponse.token);
+      await _storage.write(key: 'user', value: json.encode(loginResponse.user.toJson()));
+      return true;
+    } else {
+      return false;
+    }
   }
 
-  // Mock sign up
-  static Future<bool> signUp(String name, String email, String password) async {
-
-    await Future.delayed(const Duration(seconds: 1));
-    return true; // Return false if something fails
-  }
+  static Future<String?> getToken() => _storage.read(key: 'token');
+  static Future<void> logout() async => await _storage.deleteAll();
 }
