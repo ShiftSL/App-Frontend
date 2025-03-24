@@ -29,7 +29,7 @@ class LeaveShiftCardV2 extends StatelessWidget {
     // Format the date for display
     final String formattedDate = selectedDate != null
         ? DateFormat('EEEE, d MMM')
-            .format(selectedDate!) // e.g., "Monday, 21 Mar"
+        .format(selectedDate!) // e.g., "Monday, 21 Mar"
         : 'Today';
 
     // Get properly formatted time strings
@@ -100,7 +100,7 @@ class LeaveShiftCardV2 extends StatelessWidget {
                 'Apply for Leave',
                 textAlign: TextAlign.right,
                 style:
-                    TextStyle(color: ShiftslColors.primaryColor, fontSize: 14),
+                TextStyle(color: ShiftslColors.primaryColor, fontSize: 14),
               ),
             ),
             const SizedBox(height: 16),
@@ -171,7 +171,7 @@ class LeaveShiftCardV2 extends StatelessWidget {
     }
 
     // If all checks pass, navigate to the edit profile screen
-    Get.to(() => const EditProfileScreen());
+    Get.to(() => const DoctorDetailsScreen());
   }
 
   // Format time from ISO string to readable format (fallback method)
@@ -189,7 +189,7 @@ class LeaveShiftCardV2 extends StatelessWidget {
           final String minute = timePart.split(':')[1];
           final String period = hour >= 12 ? 'PM' : 'AM';
           final int displayHour =
-              hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+          hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
           return '$displayHour:$minute $period';
         }
       } catch (_) {

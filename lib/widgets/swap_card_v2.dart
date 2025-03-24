@@ -180,7 +180,7 @@ class SwapCardV2 extends StatelessWidget {
     }
 
     // If all checks pass, navigate to the edit profile screen
-    Get.to(() => const EditProfileScreen());
+    Get.to(() => const DoctorDetailsScreen());
   }
 
   // Format time from ISO string to readable format (fallback method)

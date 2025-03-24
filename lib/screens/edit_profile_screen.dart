@@ -1,173 +1,197 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:shift_sl/utils/constants/colors.dart';
-import 'package:shift_sl/utils/constants/sizes.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../models/user.dart'; // Ensure your UserModel includes the needed fields.
+import '../utils/constants/colors.dart';
+import '../utils/constants/sizes.dart';
 
-class EditProfileScreen extends StatelessWidget {
-  const EditProfileScreen({super.key});
+class DoctorDetailsScreen extends StatefulWidget {
+  const DoctorDetailsScreen({Key? key}) : super(key: key);
+
+  @override
+  State<DoctorDetailsScreen> createState() => _DoctorDetailsScreenState();
+}
+
+class _DoctorDetailsScreenState extends State<DoctorDetailsScreen> {
+  UserModel? _user;
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDoctorDetails();
+  }
+
+  Future<void> _loadDoctorDetails() async {
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    if (firebaseUser == null) {
+      setState(() {
+        _errorMessage = "User not signed in";
+        _isLoading = false;
+      });
+      return;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
+    if (token == null) {
+      setState(() {
+        _errorMessage = "No auth token found";
+        _isLoading = false;
+      });
+      return;
+    }
+
+    final url = Uri.parse(
+        "https://kings.backend.shiftsl.com/api/user/firebase/${firebaseUser.uid}");
+    print("Fetching doctor details from $url with token: $token");
+
+    try {
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      });
+
+      print("Response status: ${response.statusCode}");
+      print("Response body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        setState(() {
+          _user = UserModel.fromJson(jsonData);
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _errorMessage = "Failed to load doctor details: ${response.statusCode}";
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = "Error fetching doctor details: $e";
+        _isLoading = false;
+      });
+    }
+  }
+
+  /// Helper widget to display a detail row.
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              "$label:",
+              style: TextStyle(
+                fontSize: ShiftslSizes.fontSizeMd,
+                fontWeight: FontWeight.bold,
+                color: ShiftslColors.primaryColor,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: ShiftslSizes.fontSizeMd,
+                color: ShiftslColors.darkGrey,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Scaffold(
+        body: Center(child: Text(_errorMessage!)),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          'Edit Profile',
+        title: const Text(
+          'Doctor Details',
           style: TextStyle(
             color: Colors.black,
             fontSize: 20,
           ),
         ),
         centerTitle: true,
+        backgroundColor: ShiftslColors.primaryColor,
       ),
       body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.all(ShiftslSizes.defaultSpace),
-          child: Column(children: [
-            Stack(
-              children: [
-                SizedBox(
-                  width: 100,
-                  height: 100,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: Image.asset('assets/images/doctor_profile.jpg'),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: ShiftslColors.primaryColor,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Iconsax.camera,
-                      color: ShiftslColors.secondaryColor,
-                      size: 15,
-                    ),
-                  ),
-                ),
-              ],
+        padding: const EdgeInsets.all(ShiftslSizes.defaultSpace),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Profile image (network image if available; otherwise a fallback)
+            Center(
+              child: CircleAvatar(
+                radius: 60,
+                backgroundImage: _user!.profileImageUrl != null
+                    ? NetworkImage(_user!.profileImageUrl!)
+                    : const AssetImage('assets/images/doctor_profile.jpg')
+                as ImageProvider,
+              ),
             ),
-            const SizedBox(height: ShiftslSizes.defaultSpace),
-            Form(
-                child: Column(
-              children: [
-                TextFormField(
-                  decoration: InputDecoration(
-                    label: Text('Name'),
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Iconsax.user),
-                    prefixIconColor: ShiftslColors.primaryColor,
-                    floatingLabelStyle: TextStyle(
-                      color: ShiftslColors.secondaryColor,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 2,
-                        color: ShiftslColors.secondaryColor,
-                      ),
-                    ),
-                  ),
+            const SizedBox(height: 20),
+            // Doctor Name
+            Center(
+              child: Text(
+                "${_user!.firstName} ${_user!.lastName}",
+                style: TextStyle(
+                  fontSize: ShiftslSizes.fontSizeLg,
+                  fontWeight: FontWeight.bold,
+                  color: ShiftslColors.primaryColor,
                 ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  decoration: InputDecoration(
-                    label: Text('Email'),
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email_outlined),
-                    prefixIconColor: ShiftslColors.primaryColor,
-                    floatingLabelStyle: TextStyle(
-                      color: ShiftslColors.secondaryColor,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 2,
-                        color: ShiftslColors.secondaryColor,
-                      ),
-                    ),
-                  ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            // Hardcoded Hospital Name
+            Center(
+              child: Text(
+                "King's Hospital",
+                style: TextStyle(
+                  fontSize: ShiftslSizes.fontSizeMd,
+                  color: ShiftslColors.darkGrey,
                 ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  decoration: InputDecoration(
-                    label: Text('ID'),
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Iconsax.profile_tick),
-                    prefixIconColor: ShiftslColors.primaryColor,
-                    floatingLabelStyle: TextStyle(
-                      color: ShiftslColors.secondaryColor,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 2,
-                        color: ShiftslColors.secondaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'Address',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Iconsax.location),
-                    prefixIconColor: ShiftslColors.primaryColor,
-                    floatingLabelStyle: TextStyle(
-                      color: ShiftslColors.secondaryColor,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 2,
-                        color: ShiftslColors.secondaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'Ward',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Iconsax.building),
-                    prefixIconColor: ShiftslColors.primaryColor,
-                    floatingLabelStyle: TextStyle(
-                      color: ShiftslColors.secondaryColor,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: ShiftslSizes.defaultSpace),
-                SizedBox(
-                  width: double.infinity,
-                  height: 60,
-                  child: ElevatedButton(
-                    onPressed: () => Get.to(() => const EditProfileScreen()),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.all(10),
-                      backgroundColor: ShiftslColors.primaryColor,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
-                      ),
-                      side: BorderSide.none,
-                    ),
-                    child: const Text('Edit Profile',
-                        style: TextStyle(
-                            color: ShiftslColors.secondaryColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: ShiftslSizes.fontSizeMd)),
-                  ),
-                ),
-              ],
-            ))
-          ]),
+              ),
+            ),
+            const SizedBox(height: 30),
+            // Details
+            _buildDetailRow("Email", _user!.email),
+            const Divider(),
+            _buildDetailRow("Phone", _user!.phoneNo ?? "Not available"),
+            const Divider(),
+            _buildDetailRow(
+              "Role",
+              _user!.role == "DOCTOR_PERM"
+                  ? "Permanent"
+                  : _user!.role == "DOCTOR_TEMP"
+                  ? "Temporary"
+                  : _user!.role,
+            ),
+            const Divider(),
+            // Additional details can be added here.
+          ],
         ),
       ),
     );

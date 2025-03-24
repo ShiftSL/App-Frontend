@@ -7,7 +7,6 @@ plugins {
 
 android {
     namespace = "com.example.untitled1"
-
     compileSdk = 35
     ndkVersion = "27.0.12077973"
 
@@ -18,7 +17,6 @@ android {
         versionCode = 1
         versionName = "1.0.0"
     }
-
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

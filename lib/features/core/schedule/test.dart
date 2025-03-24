@@ -112,7 +112,7 @@ class ShiftCard extends StatelessWidget {
                     width: 50,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () => Get.to(() => const EditProfileScreen()),
+                      onPressed: () => Get.to(() => const DoctorDetailsScreen()),
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.all(10),
                         backgroundColor: ShiftslColors.secondaryColor,

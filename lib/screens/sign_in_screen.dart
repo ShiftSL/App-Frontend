@@ -30,7 +30,7 @@ class _SignInScreenState extends State<SignInScreen> {
       );
 
       final prefs = await SharedPreferences.getInstance();
-      final expiryDate = DateTime.now().add(const Duration(days: 90));
+      final expiryDate = DateTime.now().add(const Duration(minutes: 60));
       await prefs.setString('sessionExpiry', expiryDate.toIso8601String());
 
       final hasOnboarded = prefs.getBool('hasOnboarded') ?? false;
