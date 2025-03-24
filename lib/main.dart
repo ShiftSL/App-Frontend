@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shift_sl/features/core/schedule/schedule_screen_v2.dart';
+import 'package:shift_sl/screens/apply_for_leave_screen.dart';
+import 'package:shift_sl/screens/main_scaffold.dart';
+import 'package:shift_sl/features/authentication/screens/onboarding.dart';
 import 'package:shift_sl/screens/sign_in_screen.dart';
 import 'package:shift_sl/screens/sign_up_screen.dart';
-import 'package:shift_sl/screens/main_scaffold.dart';
 import 'package:shift_sl/screens/notification_screen.dart';
-// import 'package:shift_sl/screens/schedule_screen.dart';
-import 'package:shift_sl/screens/swaps_screen.dart';
-import 'package:shift_sl/screens/apply_for_leave_screen.dart';
 import 'package:shift_sl/screens/edit_profile_screen.dart';
 import 'package:shift_sl/screens/profile_screen.dart';
-import 'package:shift_sl/features/authentication/screens/onboarding.dart';
+import 'package:shift_sl/features/core/schedule/schedule_screen_v2.dart';
 import 'package:shift_sl/utils/theme/theme.dart';
 
 Future<void> main() async {
@@ -39,8 +37,15 @@ class ShiftSlApp extends StatelessWidget {
         GetPage(name: '/home', page: () => const MainScaffold()),
         GetPage(name: '/notifications', page: () => const NotificationScreen()),
         GetPage(name: '/schedule', page: () => ShiftManagementScreen()),
+
+        // IMPORTANT: Remove 'const' here and use arguments
         GetPage(
-            name: '/applyForLeave', page: () => const ApplyForLeaveScreen()),
+          name: '/applyForLeave',
+          page: () => ApplyForLeaveScreen(
+            doctorId: Get.arguments["doctorId"],
+          ),
+        ),
+
         GetPage(name: '/editProfile', page: () => const DoctorDetailsScreen()),
         GetPage(name: '/profile', page: () => const ProfileScreen()),
       ],
@@ -52,10 +57,10 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  SplashScreenState createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();

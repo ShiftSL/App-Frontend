@@ -7,7 +7,7 @@ import '../models/user.dart'; // Ensure your UserModel includes the needed field
 import '../utils/constants/colors.dart';
 import '../utils/constants/sizes.dart';
 
-class DoctorDetailsScreen extends StatefulWidget {
+class  DoctorDetailsScreen extends StatefulWidget {
   const DoctorDetailsScreen({Key? key}) : super(key: key);
 
   @override

@@ -187,9 +187,9 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
       final token = prefs.getString('authToken');
       if (token == null) throw Exception('No auth token found');
 
-      // All shifts endpoint (without doctor id)
-      final url = Uri.parse('https://kings.backend.shiftsl.com/api/shift/');
-      print("Fetching All Shifts from $url with token: $token");
+      final doctorId = _user!.id;
+      final url = Uri.parse('https://kings.backend.shiftsl.com/api/shift');
+      print("Fetching My Shifts from $url with token: $token");
 
       final response = await http.get(url, headers: {
         'Authorization': 'Bearer $token',
