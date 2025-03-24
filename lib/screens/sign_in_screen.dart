@@ -24,14 +24,20 @@ class _SignInScreenState extends State<SignInScreen> {
     }
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
+      // Retrieve the ID token from the user credentials.
+      final String? token = await userCredential.user?.getIdToken();
+      print("Bearer token: $token");
+
+      // Optionally, store the token in SharedPreferences or a secure storage
       final prefs = await SharedPreferences.getInstance();
-      final expiryDate = DateTime.now().add(const Duration(minutes: 60));
-      await prefs.setString('sessionExpiry', expiryDate.toIso8601String());
+      if (token != null) {
+        await prefs.setString('authToken', token);
+      }
 
       final hasOnboarded = prefs.getBool('hasOnboarded') ?? false;
       if (!hasOnboarded) {
