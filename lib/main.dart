@@ -39,12 +39,6 @@ class ShiftSlApp extends StatelessWidget {
         GetPage(name: '/schedule', page: () => ShiftManagementScreen()),
 
         // IMPORTANT: Remove 'const' here and use arguments
-        GetPage(
-          name: '/applyForLeave',
-          page: () => ApplyForLeaveScreen(
-            doctorId: Get.arguments["doctorId"],
-          ),
-        ),
 
         GetPage(name: '/editProfile', page: () => const DoctorDetailsScreen()),
         GetPage(name: '/profile', page: () => const ProfileScreen()),

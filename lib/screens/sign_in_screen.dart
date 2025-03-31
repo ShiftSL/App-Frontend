@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/constants/colors.dart';
+import '../utils/constants/sizes.dart';
 import '../widgets/shift_sl_logo.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -64,22 +66,27 @@ class _SignInScreenState extends State<SignInScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const ShiftSlLogo(width: 200, height: 175),
-            const SizedBox(height: 30),
+            const ShiftSlLogo(width: 300, height: 200),
+            const SizedBox(height: 20),
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),
-            ),
+            ),const SizedBox(height: 20),
             TextField(
               controller: _passwordController,
               obscureText: true,
               decoration: const InputDecoration(labelText: 'Password'),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             ElevatedButton(
               onPressed: _signIn,
-              child: const Text('Sign In'),
-            ),
+              child: const Text('Sign In',
+                style: TextStyle(
+                color: ShiftslColors.secondaryColor,
+                fontSize: ShiftslSizes.fontSizeMd,
+                fontWeight: FontWeight.w400,
+              ),
+            ),),
             TextButton(
               onPressed: () => Navigator.pushNamed(context, '/signUp'),
               child: const Text("Don't have an account? Sign Up"),

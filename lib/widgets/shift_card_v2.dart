@@ -5,6 +5,8 @@ import 'package:shift_sl/screens/edit_profile_screen.dart';
 import 'package:shift_sl/utils/constants/colors.dart';
 import 'package:shift_sl/utils/constants/sizes.dart';
 
+import '../screens/apply_for_leave_screen.dart';
+
 class ShiftCardV2 extends StatelessWidget {
   const ShiftCardV2({super.key});
 
@@ -40,7 +42,7 @@ class ShiftCardV2 extends StatelessWidget {
                     width: 50,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () => Get.to(() => const DoctorDetailsScreen()),
+                      onPressed: () => Get.to(() => const ApplyForLeaveScreen()),
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.all(10),
                         backgroundColor: ShiftslColors.secondaryColor,

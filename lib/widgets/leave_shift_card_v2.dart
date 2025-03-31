@@ -6,6 +6,8 @@ import 'package:shift_sl/utils/constants/colors.dart';
 import 'package:shift_sl/utils/constants/sizes.dart';
 import 'package:intl/intl.dart';
 
+import '../screens/apply_for_leave_screen.dart';
+
 class LeaveShiftCardV2 extends StatelessWidget {
   final String shiftType;
   final String startTime;
@@ -171,7 +173,7 @@ class LeaveShiftCardV2 extends StatelessWidget {
     }
 
     // If all checks pass, navigate to the edit profile screen
-    Get.to(() => const DoctorDetailsScreen());
+    Get.to(() => const ApplyForLeaveScreen());
   }
 
   // Format time from ISO string to readable format (fallback method)

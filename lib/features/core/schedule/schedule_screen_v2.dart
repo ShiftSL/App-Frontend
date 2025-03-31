@@ -13,11 +13,12 @@ import 'package:shift_sl/widgets/leave_shift_card_v2.dart';
 import 'package:shift_sl/widgets/swap_card_v2.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+
 import '../../../models/user.dart';
 import '../../../services/User_service.dart';
 
 class ShiftManagementScreen extends StatefulWidget {
-  ShiftManagementScreen({Key? key}) : super(key: key);
+  const ShiftManagementScreen({Key? key}) : super(key: key);
 
   @override
   _ShiftManagementScreenState createState() => _ShiftManagementScreenState();
@@ -46,15 +47,13 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
 
-    // Retrieve the Firebase user and fetch user details.
     final firebaseUser = FirebaseAuth.instance.currentUser;
     if (firebaseUser != null) {
+      // If user is logged in, fetch user data, then fetch shifts
       fetchUserByFirebaseUid(firebaseUser.uid).then((userDetails) {
         if (!mounted) return;
-        setState(() {
-          _user = userDetails;
-        });
-        // Fetch both My Shifts and All Shifts when user details are available.
+        setState(() => _user = userDetails);
+
         if (_user != null) {
           _fetchMyShiftData();
           _fetchAllShiftData();
@@ -66,6 +65,7 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
         }
       });
     } else {
+      // No Firebase user found
       setState(() {
         _isMyLoading = false;
         _isAllLoading = false;
@@ -83,36 +83,27 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
   Future<UserModel?> fetchUserByFirebaseUid(String firebaseUid) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('authToken');
-    if (token == null) {
-      print('No auth token found');
-      return null;
-    }
-    final url = Uri.parse("https://kings.backend.shiftsl.com/api/user/firebase/$firebaseUid");
-    print("Fetching user data from $url with token: $token");
+    if (token == null) return null;
 
+    final url = Uri.parse("https://kings.backend.shiftsl.com/api/user/firebase/$firebaseUid");
     final response = await http.get(url, headers: {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
     });
-
-    print("User response status code: ${response.statusCode}");
-    print("User response body: ${response.body}");
 
     if (response.statusCode == 200) {
       try {
         final jsonData = json.decode(response.body);
         return UserModel.fromJson(jsonData);
       } catch (e) {
-        print("Error parsing user data: $e");
         return null;
       }
     } else {
-      print("Failed to load user data, status code: ${response.statusCode}");
       return null;
     }
   }
 
-  /// Service 1: Fetch My Shifts using the dynamic doctor id.
+  /// Fetch My Shifts for the logged-in user.
   Future<void> _fetchMyShiftData() async {
     setState(() {
       _isMyLoading = true;
@@ -123,11 +114,9 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('authToken');
       if (token == null) throw Exception('No auth token found');
-
       final doctorId = _user!.id;
-      final url = Uri.parse('https://kings.backend.shiftsl.com/api/shift/$doctorId');
-      print("Fetching My Shifts from $url with token: $token");
 
+      final url = Uri.parse("https://kings.backend.shiftsl.com/api/shift/$doctorId");
       final response = await http.get(url, headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -135,16 +124,15 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
-
-        // Group shifts by date.
         final Map<DateTime, List<Map<String, dynamic>>> groupedShifts = {};
+
+        // Group shifts by date
         for (var shift in data) {
-          DateTime shiftDate = DateTime.parse(shift['startTime']).toLocal().dateOnly();
-          if (!groupedShifts.containsKey(shiftDate)) {
-            groupedShifts[shiftDate] = [];
-          }
-          String formattedStartTime = _formatTime(shift['startTime']);
-          String formattedEndTime = _formatTime(shift['endTime']);
+          final shiftDate = DateTime.parse(shift['startTime']).toLocal().dateOnly();
+          groupedShifts.putIfAbsent(shiftDate, () => []);
+
+          final formattedStartTime = _formatTime(shift['startTime']);
+          final formattedEndTime = _formatTime(shift['endTime']);
 
           groupedShifts[shiftDate]!.add({
             "shiftType": _determineShiftType(shift['startTime'], shift['endTime']),
@@ -175,7 +163,7 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
     }
   }
 
-  /// Service 2: Fetch All Shifts from the endpoint that returns every shift.
+  /// Fetch All Shifts from the endpoint returning every shift.
   Future<void> _fetchAllShiftData() async {
     setState(() {
       _isAllLoading = true;
@@ -187,10 +175,7 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
       final token = prefs.getString('authToken');
       if (token == null) throw Exception('No auth token found');
 
-      final doctorId = _user!.id;
-      final url = Uri.parse('https://kings.backend.shiftsl.com/api/shift');
-      print("Fetching My Shifts from $url with token: $token");
-
+      final url = Uri.parse("https://kings.backend.shiftsl.com/api/shift");
       final response = await http.get(url, headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -199,23 +184,48 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
 
-        // Group shifts by date.
+        // Temporary map to group by date
         final Map<DateTime, List<Map<String, dynamic>>> groupedShifts = {};
-        for (var shift in data) {
-          DateTime shiftDate = DateTime.parse(shift['startTime']).toLocal().dateOnly();
-          if (!groupedShifts.containsKey(shiftDate)) {
-            groupedShifts[shiftDate] = [];
-          }
-          String formattedStartTime = _formatTime(shift['startTime']);
-          String formattedEndTime = _formatTime(shift['endTime']);
 
+        for (var shift in data) {
+          final shiftDate =
+          DateTime.parse(shift['startTime']).toLocal().dateOnly();
+          groupedShifts.putIfAbsent(shiftDate, () => []);
+
+          // 1) Build a comma-separated list of the doctors' names
+          String doctorNames = "";
+          if (shift['doctors'] != null && shift['doctors'] is List) {
+            final doctorsList = shift['doctors'] as List;
+            final nameList = <String>[];
+
+            for (var doctor in doctorsList) {
+              final fName = doctor['firstName'] ?? '';
+              final lName = doctor['lastName'] ?? '';
+              final fullName = "$fName $lName".trim();
+              if (fullName.isNotEmpty) {
+                nameList.add(fullName);
+              }
+            }
+            // Join all doctor names into a single string
+            doctorNames = nameList.join(', ');
+          }
+
+          // 2) Format times for readability
+          final formattedStartTime = _formatTime(shift['startTime']);
+          final formattedEndTime = _formatTime(shift['endTime']);
+
+          // 3) Determine shift type
+          final shiftType =
+          _determineShiftType(shift['startTime'], shift['endTime']);
+
+          // 4) Store the parsed data
           groupedShifts[shiftDate]!.add({
-            "shiftType": _determineShiftType(shift['startTime'], shift['endTime']),
+            "shiftType": shiftType,
             "startTime": shift['startTime'],
             "endTime": shift['endTime'],
             "formattedStartTime": formattedStartTime,
             "formattedEndTime": formattedEndTime,
-            // Optionally include additional data such as doctor details.
+            "doctorNames": doctorNames, // <-- assigned doctors
           });
         }
 
@@ -225,7 +235,8 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
         });
       } else {
         setState(() {
-          _allErrorMessage = 'Failed to load All Shifts: ${response.statusCode}';
+          _allErrorMessage =
+          'Failed to load All Shifts: ${response.statusCode}';
           _isAllLoading = false;
           _allShiftData = {};
         });
@@ -239,19 +250,20 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
     }
   }
 
-  /// Formats ISO time string to a readable format (e.g., "9:00 AM").
+
+  /// Convert an ISO time string to a user-friendly format (e.g., "9:00 AM").
   String _formatTime(String isoTimeString) {
     try {
-      final DateTime dateTime = DateTime.parse(isoTimeString).toLocal();
+      final dateTime = DateTime.parse(isoTimeString).toLocal();
       return DateFormat('h:mm a').format(dateTime);
     } catch (e) {
       return isoTimeString;
     }
   }
 
-  /// Determines shift type based on start time.
+  /// Determine shift type (morning/day/night) based on the start hour.
   String _determineShiftType(String startTime, String endTime) {
-    int startHour = int.tryParse(startTime.split('T')[1].split(':')[0]) ?? 0;
+    final startHour = int.tryParse(startTime.split('T')[1].split(':')[0]) ?? 0;
     if (startHour >= 6 && startHour < 12) {
       return "Morning Shift";
     } else if (startHour >= 12 && startHour < 18) {
@@ -261,6 +273,7 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
     }
   }
 
+  /// Called when the user taps a day in the calendar.
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
@@ -270,22 +283,24 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
     }
   }
 
-  /// Custom calendar builder for day markers.
+  /// Simple method to style each day on the calendar.
   Widget _calendarBuilder(BuildContext context, DateTime day, DateTime focusedDay) {
     final today = DateTime.now().dateOnly();
     final isToday = isSameDay(day, today);
-    Widget? dayMarker;
-    if (isToday) {
-      dayMarker = Container(
-        margin: const EdgeInsets.all(0),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: ShiftslColors.secondaryColor,
-        ),
-        width: 8,
-        height: 8,
-      );
-    }
+
+    // Show a small dot for "today"
+    Widget? dayMarker = isToday
+        ? Container(
+      margin: const EdgeInsets.all(0),
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: ShiftslColors.secondaryColor,
+      ),
+      width: 8,
+      height: 8,
+    )
+        : null;
+
     return Container(
       margin: const EdgeInsets.all(4.0),
       alignment: Alignment.center,
@@ -313,68 +328,18 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
     );
   }
 
+  /// Tab 1: My Shifts
   Widget _buildMyShiftsTab() {
     return SingleChildScrollView(
       child: Column(
         children: [
-          // Calendar widget for My Shifts tab
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TableCalendar(
-              calendarBuilders: CalendarBuilders(
-                defaultBuilder: _calendarBuilder,
-              ),
-              locale: 'en_US',
-              rowHeight: 50,
-              focusedDay: _focusedDay,
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              firstDay: DateTime(2020, 1, 1),
-              lastDay: DateTime(2030, 12, 31),
-              availableGestures: AvailableGestures.all,
-              selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
-              onDaySelected: _onDaySelected,
-              calendarFormat: _calendarFormat,
-              onFormatChanged: (format) {
-                if (_calendarFormat != format) {
-                  setState(() {
-                    _calendarFormat = format;
-                  });
-                }
-              },
-              onPageChanged: (focusedDay) {
-                _focusedDay = focusedDay;
-              },
-              eventLoader: (day) {
-                return _myShiftData[day.dateOnly()] ?? [];
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 12,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: ShiftslColors.primaryColor,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text("Allocated Shift"),
-                  ],
-                ),
-              ],
-            ),
+          _buildCalendar(
+            eventsLoader: (day) => _myShiftData[day.dateOnly()] ?? [],
           ),
           const SizedBox(height: 16),
           Text(
             'Selected Day: ${DateFormat('EEEE, MMMM d, yyyy').format(_selectedDay)}',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(height: 16),
           _buildMyShiftContent(),
@@ -384,68 +349,18 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
     );
   }
 
+  /// Tab 2: All Shifts (Schedule View)
   Widget _buildAllShiftsTab() {
     return SingleChildScrollView(
       child: Column(
         children: [
-          // Calendar widget for All Shifts tab
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TableCalendar(
-              calendarBuilders: CalendarBuilders(
-                defaultBuilder: _calendarBuilder,
-              ),
-              locale: 'en_US',
-              rowHeight: 50,
-              focusedDay: _focusedDay,
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              firstDay: DateTime(2020, 1, 1),
-              lastDay: DateTime(2030, 12, 31),
-              availableGestures: AvailableGestures.all,
-              selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
-              onDaySelected: _onDaySelected,
-              calendarFormat: _calendarFormat,
-              onFormatChanged: (format) {
-                if (_calendarFormat != format) {
-                  setState(() {
-                    _calendarFormat = format;
-                  });
-                }
-              },
-              onPageChanged: (focusedDay) {
-                _focusedDay = focusedDay;
-              },
-              eventLoader: (day) {
-                return _allShiftData[day.dateOnly()] ?? [];
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 12,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: ShiftslColors.primaryColor,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text("Allocated Shift"),
-                  ],
-                ),
-              ],
-            ),
+          _buildCalendar(
+            eventsLoader: (day) => _allShiftData[day.dateOnly()] ?? [],
           ),
           const SizedBox(height: 16),
           Text(
             'Selected Day: ${DateFormat('EEEE, MMMM d, yyyy').format(_selectedDay)}',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
           const SizedBox(height: 16),
           _buildAllShiftContent(),
@@ -455,42 +370,54 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
     );
   }
 
+  /// Reusable calendar widget for each tab
+  Widget _buildCalendar({
+    required List<dynamic> Function(DateTime) eventsLoader,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: TableCalendar(
+        calendarBuilders: CalendarBuilders(
+          defaultBuilder: _calendarBuilder,
+        ),
+        locale: 'en_US',
+        rowHeight: 50,
+        focusedDay: _focusedDay,
+        startingDayOfWeek: StartingDayOfWeek.monday,
+        firstDay: DateTime(2020, 1, 1),
+        lastDay: DateTime(2030, 12, 31),
+        availableGestures: AvailableGestures.all,
+        selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+        onDaySelected: _onDaySelected,
+        calendarFormat: _calendarFormat,
+        onFormatChanged: (format) {
+          if (_calendarFormat != format) {
+            setState(() => _calendarFormat = format);
+          }
+        },
+        onPageChanged: (focusedDay) => _focusedDay = focusedDay,
+        eventLoader: eventsLoader,
+      ),
+    );
+  }
+
+  /// "My Shifts" content for the selected day
   Widget _buildMyShiftContent() {
     if (_isMyLoading) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
     if (_myErrorMessage != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Icon(Icons.error_outline, color: Colors.red, size: 48),
-              SizedBox(height: 16),
-              Text(
-                _myErrorMessage!,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.red),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _fetchMyShiftData,
-                child: Text('Retry'),
-              ),
-            ],
-          ),
-        ),
+      return _buildErrorMessage(
+        message: _myErrorMessage!,
+        retryCallback: _fetchMyShiftData,
       );
     }
+
     final shifts = _myShiftData[_selectedDay.dateOnly()] ?? [];
     if (shifts.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text("No shift scheduled for this day"),
-        ),
-      );
+      return _buildEmptyMessage("No shift scheduled for this day");
     }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -508,49 +435,31 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
     );
   }
 
+  /// "All Shifts" content for the selected day
+  /// "All Shifts" content for the selected day
   Widget _buildAllShiftContent() {
     if (_isAllLoading) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
     if (_allErrorMessage != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Icon(Icons.error_outline, color: Colors.red, size: 48),
-              SizedBox(height: 16),
-              Text(
-                _allErrorMessage!,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.red),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _fetchAllShiftData,
-                child: Text('Retry'),
-              ),
-            ],
-          ),
-        ),
+      return _buildErrorMessage(
+        message: _allErrorMessage!,
+        retryCallback: _fetchAllShiftData,
       );
     }
+
     final shifts = _allShiftData[_selectedDay.dateOnly()] ?? [];
     if (shifts.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text("No shift scheduled for this day"),
-        ),
-      );
+      return _buildEmptyMessage("No shift scheduled for this day");
     }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: shifts.map((shift) {
           return SwapCardV2(
-            // For all shifts, you might want to display the doctor's name.
-            doctorName: "${_user!.firstName} ${_user!.lastName}",
+            // Display the list of assigned doctors:
+            doctorName: shift["doctorNames"] ?? "Unassigned",
             shiftType: shift["shiftType"],
             startTime: shift["startTime"],
             endTime: shift["endTime"],
@@ -563,11 +472,45 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
     );
   }
 
+  /// Display an error message and a Retry button
+  Widget _buildErrorMessage({
+    required String message,
+    required VoidCallback retryCallback,
+  }) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 48),
+            const SizedBox(height: 16),
+            Text(message, textAlign: TextAlign.center, style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: retryCallback,
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Display a simple empty message
+  Widget _buildEmptyMessage(String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text(message),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Schedule',
           style: TextStyle(
             color: Colors.black,
@@ -582,14 +525,11 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
             child: Container(
               height: 40,
               margin: const EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: const Color(0xFFFFFFFF),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 20,
-                  ),
+                color: Color(0xFFFFFFFF),
+                boxShadow: [
+                  BoxShadow(color: Colors.black12, blurRadius: 20),
                 ],
               ),
               child: TabBar(
@@ -622,6 +562,7 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen>
   }
 }
 
+/// Extension to trim a [DateTime] to YYYY-MM-DD only.
 extension DateOnly on DateTime {
   DateTime dateOnly() {
     return DateTime(year, month, day);

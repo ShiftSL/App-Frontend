@@ -7,10 +7,10 @@ import 'package:shift_sl/utils/constants/sizes.dart';
 import 'package:intl/intl.dart';
 
 class SwapCardV2 extends StatelessWidget {
-  final String doctorName;
-  final String shiftType;
-  final String startTime;
-  final String endTime;
+  final String doctorName;         // e.g. "Alice, Bob, Charlie"
+  final String shiftType;          // e.g. "Day Shift", "Night Shift"
+  final String startTime;          // ISO string
+  final String endTime;            // ISO string
   final String? formattedStartTime;
   final String? formattedEndTime;
   final DateTime? selectedDate;
@@ -30,11 +30,10 @@ class SwapCardV2 extends StatelessWidget {
   Widget build(BuildContext context) {
     // Format the date for display
     final String formattedDate = selectedDate != null
-        ? DateFormat('EEEE, d MMM')
-            .format(selectedDate!) // e.g., "Monday, 21 Mar"
+        ? DateFormat('EEEE, d MMM').format(selectedDate!) // e.g. "Monday, 21 Mar"
         : 'Today';
 
-    // Get properly formatted time strings
+    // Determine display time for the shift
     final String displayStartTime =
         formattedStartTime ?? _formatTimeFromIso(startTime);
     final String displayEndTime =
@@ -57,35 +56,51 @@ class SwapCardV2 extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Top row with avatar, name/type column, and button
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CircleAvatar(
                   backgroundColor: ShiftslColors.primaryColor,
                   child: Icon(shiftIcon, color: ShiftslColors.secondaryColor),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  doctorName,
-                  style: TextStyle(
-                      color: ShiftslColors.primaryColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
+
+                // Show the assigned doctor name(s) and shift type in a column
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 1) Show assigned doctor(s)
+                      Text(
+                        doctorName,
+                        style: const TextStyle(
+                          color: ShiftslColors.primaryColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      // 2) Show shift type
+                      Text(
+                        shiftType,
+                        style: const TextStyle(
+                          color: ShiftslColors.primaryColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Text(
-                  shiftType,
-                  style: TextStyle(
-                      color: ShiftslColors.primaryColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
-                ),
-                Spacer(),
+
+                // 'Apply' or 'Calendar Add' button
                 SizedBox(
                   width: 50,
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () => _handleLeaveApplication(context),
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       backgroundColor: ShiftslColors.secondaryColor,
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -101,7 +116,10 @@ class SwapCardV2 extends StatelessWidget {
                 ),
               ],
             ),
+
             const SizedBox(height: 8),
+
+            // "Swap Shift" label on the right
             const SizedBox(
               height: 20,
               width: double.infinity,
@@ -109,26 +127,33 @@ class SwapCardV2 extends StatelessWidget {
                 'Swap Shift',
                 textAlign: TextAlign.right,
                 style:
-                    TextStyle(color: ShiftslColors.primaryColor, fontSize: 14),
+                TextStyle(color: ShiftslColors.primaryColor, fontSize: 14),
               ),
             ),
+
             const SizedBox(height: 16),
+
+            // Bottom row: date + time range
             Row(
               children: [
                 Icon(Iconsax.arrow_swap, color: ShiftslColors.primaryColor),
                 const SizedBox(width: 8),
                 Text(
                   formattedDate,
-                  style: TextStyle(
-                      color: ShiftslColors.primaryColor, fontSize: 14),
+                  style: const TextStyle(
+                    color: ShiftslColors.primaryColor,
+                    fontSize: 14,
+                  ),
                 ),
-                Spacer(),
+                const Spacer(),
                 Icon(Iconsax.clock, color: ShiftslColors.primaryColor),
                 const SizedBox(width: 8),
                 Text(
                   '$displayStartTime - $displayEndTime',
-                  style: TextStyle(
-                      color: ShiftslColors.primaryColor, fontSize: 14),
+                  style: const TextStyle(
+                    color: ShiftslColors.primaryColor,
+                    fontSize: 14,
+                  ),
                 ),
               ],
             ),
@@ -158,7 +183,7 @@ class SwapCardV2 extends StatelessWidget {
       return;
     }
 
-    // 2. Check if the shift has already started today
+    // 2. If the shift date is today, check if it's started
     if (selectedDay.isAtSameMomentAs(today)) {
       try {
         final DateTime shiftStartTime = DateTime.parse(startTime).toLocal();
@@ -189,22 +214,22 @@ class SwapCardV2 extends StatelessWidget {
       final DateTime dateTime = DateTime.parse(isoTimeString).toLocal();
       return DateFormat('h:mm a').format(dateTime); // e.g., "9:00 AM"
     } catch (e) {
-      // Fallback to manual parsing if DateTime.parse fails
+      // If normal parsing fails, attempt a simple manual parse
       try {
         final List<String> parts = isoTimeString.split('T');
         if (parts.length > 1) {
-          final String timePart = parts[1].substring(0, 5); // Get HH:MM
+          final String timePart = parts[1].substring(0, 5); // "HH:MM"
           final int hour = int.tryParse(timePart.split(':')[0]) ?? 0;
           final String minute = timePart.split(':')[1];
           final String period = hour >= 12 ? 'PM' : 'AM';
           final int displayHour =
-              hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+          hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
           return '$displayHour:$minute $period';
         }
       } catch (_) {
-        // If manual parsing fails too, just return the original
+        // If all parsing fails, just return original
       }
-      return isoTimeString; // Return original if all parsing fails
+      return isoTimeString;
     }
   }
 }
