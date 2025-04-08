@@ -15,6 +15,30 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkIfAlreadyLoggedIn();
+  }
+
+  Future<void> _checkIfAlreadyLoggedIn() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        await user.getIdToken(true); // Force refresh
+        final token = await user.getIdToken();
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('authToken', token ?? '');
+        Navigator.pushReplacementNamed(context, '/home');
+      } catch (e) {
+        print("Token refresh failed, user might be signed out.");
+      }
+    }
+  }
 
   Future<void> _signIn() async {
     final email = _emailController.text.trim();
@@ -25,43 +49,62 @@ class _SignInScreenState extends State<SignInScreen> {
       return;
     }
 
+    setState(() => _isLoading = true);
+
     try {
       final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // Retrieve the ID token from the user credentials.
-      final String? token = await userCredential.user?.getIdToken();
-      print("Bearer token: $token");
-
-      // Optionally, store the token in SharedPreferences or a secure storage
+      final token = await userCredential.user?.getIdToken();
       final prefs = await SharedPreferences.getInstance();
+
+      // Store token & expiry
       if (token != null) {
         await prefs.setString('authToken', token);
+
+        // 3-month session logic
+        final expiryDate = DateTime.now().add(const Duration(days: 90));
+        await prefs.setString('sessionExpiry', expiryDate.toIso8601String());
       }
 
-      final hasOnboarded = prefs.getBool('hasOnboarded') ?? false;
-      if (!hasOnboarded) {
-        await prefs.setBool('hasOnboarded', true);
-        Navigator.pushReplacementNamed(context, '/onboarding');
-      } else {
-        Navigator.pushReplacementNamed(context, '/home');
-      }
+      // ✅ Redirect only to home
+      Navigator.pushReplacementNamed(context, '/home');
     } on FirebaseAuthException catch (e) {
       _showMessage('Sign in failed: ${e.message}');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+
+  Future<void> _forgotPassword() async {
+    final email = _emailController.text.trim();
+
+    if (email.isEmpty) {
+      _showMessage("Please enter your email to reset password.");
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      _showMessage("Password reset link sent to $email");
+    } catch (e) {
+      _showMessage("Failed to send reset email.");
     }
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -71,25 +114,41 @@ class _SignInScreenState extends State<SignInScreen> {
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),
-            ),const SizedBox(height: 20),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 20),
             TextField(
               controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password'),
+              obscureText: _obscurePassword,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                ),
+              ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: _forgotPassword,
+                child: const Text('Forgot Password?'),
+              ),
+            ),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: _signIn,
-              child: const Text('Sign In',
+              child: const Text(
+                'Sign In',
                 style: TextStyle(
-                color: ShiftslColors.secondaryColor,
-                fontSize: ShiftslSizes.fontSizeMd,
-                fontWeight: FontWeight.w400,
+                  color: ShiftslColors.secondaryColor,
+                  fontSize: ShiftslSizes.fontSizeMd,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
-            ),),
-            TextButton(
-              onPressed: () => Navigator.pushNamed(context, '/signUp'),
-              child: const Text("Don't have an account? Sign Up"),
             ),
           ],
         ),

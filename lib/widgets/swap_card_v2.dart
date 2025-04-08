@@ -108,7 +108,7 @@ class SwapCardV2 extends StatelessWidget {
                       side: BorderSide.none,
                     ),
                     child: const Icon(
-                      Iconsax.calendar_add,
+                      Iconsax.arrow_swap_horizontal,
                       size: 24,
                       color: ShiftslColors.primaryColor,
                     ),
@@ -136,7 +136,7 @@ class SwapCardV2 extends StatelessWidget {
             // Bottom row: date + time range
             Row(
               children: [
-                Icon(Iconsax.arrow_swap, color: ShiftslColors.primaryColor),
+                Icon(Iconsax.calendar, color: ShiftslColors.primaryColor),
                 const SizedBox(width: 8),
                 Text(
                   formattedDate,

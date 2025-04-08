@@ -32,4 +32,17 @@ class UserModel {
   get profileImageUrl => null;
 
   get hospitalName => null;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'firstName': firstName,
+      'lastName': lastName,
+      'firebaseUid': firebaseUid,
+      'phoneNo': phoneNo,
+      'email': email,
+      'role': role,
+    };
+  }
+
 }
